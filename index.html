@@ -12,6 +12,9 @@
   --accent-blue:#2f87e6;
   --glass:rgba(255,255,255,0.03);
   --glass-2:rgba(255,255,255,0.02);
+  --sidebar-width-hidden: 0px;
+  --sidebar-width-mini: 60px;
+  --sidebar-width-full: 220px;
 }
 [data-theme="light"]{
   --bg-dark:#eef3f8;
@@ -126,7 +129,7 @@ body::before{
 }
 #welcome .closeWelcome:hover{transform:scale(1.05);box-shadow:0 0 18px rgba(47,135,230,0.5);}
 
-/* Panels & Sidebar */
+/* Panels */
 .panel{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px;z-index:130;background:transparent;}
 .panel.active{display:flex;}
 .panel .box{background:var(--panel-dark);padding:28px;border-radius:16px;width:100%;max-width:480px;box-shadow:0 20px 50px rgba(0,0,0,0.6);display:flex;flex-direction:column;align-items:center;border:1px solid var(--glass);}
@@ -168,12 +171,202 @@ body::before{
 .status-item span:last-child::-webkit-scrollbar-thumb{background:var(--accent-blue);border-radius:10px;}
 .status-item span:last-child::-webkit-scrollbar-track{background:transparent;}
 
-/* SIDEBAR */
-#hamburger{position:fixed;top:16px;right:12px;z-index:150;background:var(--panel-dark);color:var(--accent-blue);border-radius:10px;padding:10px;border:1px solid var(--glass-2);cursor:pointer;}
-.mini-drawer{position:fixed;top:0;right:0;width:60px;height:100%;background:var(--panel-dark);display:flex;flex-direction:column;align-items:center;padding-top:70px;gap:10px;transform:translateX(100%);transition:transform .3s ease;z-index:140;border-left:1px solid var(--glass-2);}
-.mini-drawer.open{transform:translateX(0);}
-.mini-btn{width:48px;height:48px;background:transparent;border:1px solid var(--glass-2);border-radius:12px;display:flex;justify-content:center;align-items:center;font-size:20px;cursor:pointer;color:var(--accent-blue);transition:.14s;}
-.mini-btn:hover{background:var(--glass);transform:translateY(-3px);}
+/* THREE-LEVEL SIDEBAR */
+.sidebar-wrapper{
+  position:fixed;
+  left:0;
+  top:0;
+  height:100%;
+  width:var(--sidebar-width-hidden);
+  background:var(--panel-dark);
+  border-right:1px solid var(--glass-2);
+  transition:width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index:145;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  box-shadow:2px 0 20px rgba(0,0,0,0.3);
+}
+
+.sidebar-wrapper.mini{
+  width:var(--sidebar-width-mini);
+}
+
+.sidebar-wrapper.full{
+  width:var(--sidebar-width-full);
+}
+
+.sidebar-header{
+  padding:16px 12px;
+  border-bottom:1px solid var(--glass-2);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:70px;
+}
+
+.sidebar-logo{
+  font-size:1.2rem;
+  font-weight:700;
+  color:var(--accent-blue);
+  white-space:nowrap;
+  opacity:0;
+  transform:translateX(-10px);
+  transition:all 0.3s ease;
+}
+
+.sidebar-wrapper.full .sidebar-logo{
+  opacity:1;
+  transform:translateX(0);
+}
+
+.sidebar-wrapper.mini .sidebar-logo{
+  display:none;
+}
+
+.sidebar-list{
+  list-style:none;
+  padding:16px 8px;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  flex:1;
+}
+
+.sidebar-item{
+  position:relative;
+}
+
+.sidebar-link{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:11px 12px;
+  background:transparent;
+  border:none;
+  border-radius:10px;
+  color:var(--muted-dark);
+  font-weight:600;
+  font-size:0.85rem;
+  cursor:pointer;
+  width:100%;
+  text-align:left;
+  transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space:nowrap;
+  overflow:hidden;
+}
+
+.sidebar-link::before{
+  content:'';
+  position:absolute;
+  left:0;
+  top:50%;
+  transform:translateY(-50%);
+  height:60%;
+  width:3px;
+  background:var(--accent-blue);
+  border-radius:0 4px 4px 0;
+  opacity:0;
+  transition:all 0.3s ease;
+}
+
+.sidebar-link:hover::before,
+.sidebar-link.active::before{
+  opacity:1;
+}
+
+.sidebar-link:hover,
+.sidebar-link.active{
+  background:var(--glass);
+  color:var(--accent-blue);
+  transform:translateX(4px);
+  box-shadow:0 4px 12px rgba(47,135,230,0.15);
+}
+
+.sidebar-icon{
+  font-size:1.1rem;
+  min-width:20px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:transform 0.3s ease;
+}
+
+.sidebar-link:hover .sidebar-icon{
+  transform:scale(1.1);
+}
+
+.sidebar-text{
+  opacity:0;
+  transform:translateX(-10px);
+  transition:all 0.3s ease;
+  transition-delay:0.1s;
+}
+
+.sidebar-wrapper.full .sidebar-text{
+  opacity:1;
+  transform:translateX(0);
+}
+
+.sidebar-wrapper.mini .sidebar-text{
+  display:none;
+}
+
+.sidebar-footer{
+  padding:16px 8px;
+  border-top:1px solid var(--glass-2);
+}
+
+/* Hamburger Button - SMALLER & HIDDEN WHEN SIDEBAR OPEN */
+#hamburger{
+  position:fixed;
+  top:12px;
+  left:12px;
+  z-index:150;
+  background:var(--panel-dark);
+  color:var(--accent-blue);
+  border-radius:8px;
+  padding:8px 10px;
+  border:1px solid var(--glass-2);
+  cursor:pointer;
+  font-size:1rem;
+  transition:all 0.3s ease;
+  box-shadow:0 4px 12px rgba(0,0,0,0.2);
+  opacity:1;
+  visibility:visible;
+}
+
+#hamburger:hover{
+  transform:scale(1.05);
+  box-shadow:0 6px 16px rgba(47,135,230,0.3);
+}
+
+/* Hide hamburger when sidebar is open (mini or full) */
+#hamburger.hidden{
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+}
+
+/* Main Content Wrapper */
+.main-content{
+  margin-left:0;
+  transition:margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  height:100%;
+  width:100%;
+}
+
+.sidebar-wrapper.mini ~ .main-content{
+  margin-left:var(--sidebar-width-mini);
+  width:calc(100% - var(--sidebar-width-mini));
+}
+
+.sidebar-wrapper.full ~ .main-content{
+  margin-left:var(--sidebar-width-full);
+  width:calc(100% - var(--sidebar-width-full));
+}
+
+/* Settings Panel Styles */
 .settings-item{
   width:100%;
   padding:12px 16px;
@@ -225,61 +418,98 @@ body::before{
   </div>
 </div>
 
-<!-- Sidebar -->
+<!-- Hamburger Menu -->
 <button id="hamburger">☰</button>
-<aside class="mini-drawer" id="drawer">
-  <button class="mini-btn" id="homeBtn">🏠</button>
-  <button class="mini-btn" id="shopBtn">🛒</button>
-  <button class="mini-btn" id="supportBtn">💖</button>
-  <button class="mini-btn" id="statusBtn">🌐</button>
-  <button class="mini-btn" id="settingsBtn">⚙️</button>
+
+<!-- Three-Level Sidebar -->
+<aside class="sidebar-wrapper" id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">Azthera SMP</div>
+  </div>
+  
+  <ul class="sidebar-list">
+    <li class="sidebar-item">
+      <button class="sidebar-link active" data-panel="home">
+        <span class="sidebar-icon">🏠</span>
+        <span class="sidebar-text">Home</span>
+      </button>
+    </li>
+    <li class="sidebar-item">
+      <button class="sidebar-link" data-panel="shop">
+        <span class="sidebar-icon">🛒</span>
+        <span class="sidebar-text">Shop</span>
+      </button>
+    </li>
+    <li class="sidebar-item">
+      <button class="sidebar-link" data-panel="support">
+        <span class="sidebar-icon">💖</span>
+        <span class="sidebar-text">Support</span>
+      </button>
+    </li>
+    <li class="sidebar-item">
+      <button class="sidebar-link" data-panel="status">
+        <span class="sidebar-icon">🌐</span>
+        <span class="sidebar-text">Server Status</span>
+      </button>
+    </li>
+    <li class="sidebar-item">
+      <button class="sidebar-link" data-panel="settings">
+        <span class="sidebar-icon">⚙️</span>
+        <span class="sidebar-text">Settings</span>
+      </button>
+    </li>
+  </ul>
+  
+  <div class="sidebar-footer">
+  </div>
 </aside>
 
-<!-- Panels -->
-<section class="panel" id="homePanel">
-  <div class="box">
-    <h2 id="homeTitle">Azthera SMP</h2>
-    <a href="https://youtube.com/@azthera.smp.server" target="_blank" class="home-link" id="linkYT">YouTube</a>
-    <a href="https://www.tiktok.com/@azthera.smp" target="_blank" class="home-link" id="linkTT">TikTok</a>
-    <a href="https://www.instagram.com/Afn.mc" target="_blank" class="home-link" id="linkIG">Instagram</a>
-    <a href="https://discord.gg/jfvsWcGpq7" target="_blank" class="home-link" id="linkDC">Discord</a>
-    <a href="https://chat.whatsapp.com/C5ys8VP3mahJeL9yZr6Tbo" target="_blank" class="home-link" id="linkWA">WhatsApp</a>
-  </div>
-</section>
-
-<section class="panel" id="statusPanel">
-  <div class="box">
-    <h2 id="statusTitle">Status Server</h2>
-    <div class="status-item"><span id="statusAddr">Alamat</span><span>nl-2.nura.host:25587</span></div>
-    <div class="status-item"><span id="statusLabel">Status</span><span id="serverState">Checking...</span></div>
-    <div class="status-item"><span id="playersLabel">Players</span><span id="serverPlayers">-</span></div>
-  </div>
-</section>
-
-<section class="panel" id="settingsPanel">
-  <div class="box">
-    <h2 id="settingsTitle">Pengaturan</h2>
-    
-    <div class="settings-item">
-      <span id="themeLabel">Tema:</span>
-      <div class="toggle-switch" id="themeToggle"><div class="lever"></div></div>
+<!-- Main Content Wrapper -->
+<div class="main-content">
+  <!-- Panels -->
+  <section class="panel active" id="homePanel">
+    <div class="box">
+      <h2 id="homeTitle">Azthera SMP</h2>
+      <a href="https://youtube.com/@azthera.smp.server" target="_blank" class="home-link" id="linkYT">YouTube</a>
+      <a href="https://www.tiktok.com/@azthera.smp" target="_blank" class="home-link" id="linkTT">TikTok</a>
+      <a href="https://www.instagram.com/Afn.mc" target="_blank" class="home-link" id="linkIG">Instagram</a>
+      <a href="https://discord.gg/jfvsWcGpq7" target="_blank" class="home-link" id="linkDC">Discord</a>
+      <a href="https://chat.whatsapp.com/C5ys8VP3mahJeL9yZr6Tbo" target="_blank" class="home-link" id="linkWA">WhatsApp</a>
     </div>
+  </section>
 
-    <div class="settings-item">
-      <span id="langLabel">Bahasa:</span>
-      <select id="languageSelect" style="background:var(--glass); border:1px solid var(--glass-2); color:var(--muted-dark); padding:6px 10px; border-radius:8px; font-weight:700; appearance: none;">
-        <option value="id">Bahasa Indonesia</option>
-        <option value="en">English</option>
-      </select>
+  <section class="panel" id="statusPanel">
+    <div class="box">
+      <h2 id="statusTitle">Status Server</h2>
+      <div class="status-item"><span id="statusAddr">Alamat</span><span>nl-2.nura.host:25587</span></div>
+      <div class="status-item"><span id="statusLabel">Status</span><span id="serverState">Checking...</span></div>
+      <div class="status-item"><span id="playersLabel">Players</span><span id="serverPlayers">-</span></div>
     </div>
+  </section>
 
-    <!-- ❌ Bagian "Animasi Latar" DIHAPUS -->
+  <section class="panel" id="settingsPanel">
+    <div class="box">
+      <h2 id="settingsTitle">Pengaturan</h2>
+      
+      <div class="settings-item">
+        <span id="themeLabel">Tema:</span>
+        <div class="toggle-switch" id="themeToggle"><div class="lever"></div></div>
+      </div>
 
-    <button id="resetSettings" style="margin-top:16px; padding:10px 16px; background:var(--accent-blue); color:#fff; border:none; border-radius:12px; font-weight:700; cursor:pointer; width:100%;">
-      <span id="resetLabel">Reset Pengaturan</span>
-    </button>
-  </div>
-</section>
+      <div class="settings-item">
+        <span id="langLabel">Bahasa:</span>
+        <select id="languageSelect" style="background:var(--glass); border:1px solid var(--glass-2); color:var(--muted-dark); padding:6px 10px; border-radius:8px; font-weight:700; appearance: none;">
+          <option value="id">Bahasa Indonesia</option>
+          <option value="en">English</option>
+        </select>
+      </div>
+
+      <button id="resetSettings" style="margin-top:16px; padding:10px 16px; background:var(--accent-blue); color:#fff; border:none; border-radius:12px; font-weight:700; cursor:pointer; width:100%;">
+        <span id="resetLabel">Reset Pengaturan</span>
+      </button>
+    </div>
+  </section>
+</div>
 
 <script>
 // === Loading Screen Stars & Meteors ===
@@ -332,28 +562,121 @@ images.forEach(src=>{
 // === Welcome Close ===
 document.querySelector('.closeWelcome').addEventListener('click',()=>{
   welcome.style.display='none';
-  document.getElementById('homePanel').classList.add('active');
 });
 
-// === Sidebar Toggle ===
-const drawer=document.getElementById('drawer');
-document.getElementById('hamburger').addEventListener('click',()=>drawer.classList.toggle('open'));
+// === THREE-LEVEL SIDEBAR LOGIC ===
+const sidebar = document.getElementById('sidebar');
+const hamburger = document.getElementById('hamburger');
+let sidebarState = 'hidden'; // hidden, mini, full
+
+function updateSidebar(){
+  sidebar.classList.remove('hidden', 'mini', 'full');
+  if(sidebarState !== 'hidden'){
+    sidebar.classList.add(sidebarState);
+  }
+  
+  // Show/hide hamburger based on sidebar state
+  hamburger.classList.toggle('hidden', sidebarState !== 'hidden');
+}
+
+// Click hamburger to open sidebar (mini)
+hamburger.addEventListener('click', (e) => {
+  e.stopPropagation();
+  if(sidebarState === 'hidden'){
+    sidebarState = 'mini';
+    updateSidebar();
+  }
+});
+
+// Click on sidebar to expand to full
+sidebar.addEventListener('click', (e) => {
+  e.stopPropagation();
+  if(sidebarState === 'mini'){
+    sidebarState = 'full';
+    updateSidebar();
+  }
+});
+
+// Hover on sidebar to expand (desktop only)
+if(window.innerWidth > 768){
+  sidebar.addEventListener('mouseenter', () => {
+    if(sidebarState === 'mini'){
+      sidebarState = 'full';
+      updateSidebar();
+    }
+  });
+  
+  sidebar.addEventListener('mouseleave', () => {
+    if(sidebarState === 'full'){
+      sidebarState = 'mini';
+      updateSidebar();
+    }
+  });
+}
 
 // === Panel Navigation ===
-const panels={
-  home:document.getElementById('homePanel'),
-  status:document.getElementById('statusPanel'),
-  settings:document.getElementById('settingsPanel')
+const panels = {
+  home: document.getElementById('homePanel'),
+  status: document.getElementById('statusPanel'),
+  settings: document.getElementById('settingsPanel')
 };
-function openPanel(name){
-  Object.values(panels).forEach(p=>p.classList.remove('active'));
-  panels[name].classList.add('active');
+
+const sidebarLinks = document.querySelectorAll('.sidebar-link');
+
+function openPanel(panelName){
+  Object.values(panels).forEach(p => {
+    if(p) p.classList.remove('active');
+  });
+  
+  if(panels[panelName]){
+    panels[panelName].classList.add('active');
+  }
+  
+  sidebarLinks.forEach(link => {
+    link.classList.remove('active');
+    if(link.dataset.panel === panelName){
+      link.classList.add('active');
+    }
+  });
+  
+  // Close sidebar after selecting
+  setTimeout(() => {
+    sidebarState = 'hidden';
+    updateSidebar();
+  }, 300);
 }
-document.getElementById('homeBtn').onclick=()=>openPanel('home');
-document.getElementById('statusBtn').onclick=()=>openPanel('status');
-document.getElementById('settingsBtn').onclick=()=>openPanel('settings');
-document.getElementById('shopBtn').onclick=()=>window.open('https://sociabuzz.com/azthera_smp/shop','_blank');
-document.getElementById('supportBtn').onclick=()=>window.open('https://minecraft-mp.com/server-s351086');
+
+function openExternalLink(url){
+  window.open(url, '_blank');
+  sidebarState = 'hidden';
+  updateSidebar();
+}
+
+// Sidebar link click handlers
+sidebarLinks.forEach(link => {
+  link.addEventListener('click', () => {
+    const panel = link.dataset.panel;
+    
+    switch(panel){
+      case 'home':
+        openPanel('home');
+        break;
+      case 'status':
+        openPanel('status');
+        fetchServer();
+        break;
+      case 'settings':
+        openPanel('settings');
+        break;
+      case 'shop':
+        openExternalLink('https://sociabuzz.com/azthera_smp/shop');
+        break;
+      case 'support':
+        openExternalLink('https://minecraft-mp.com/server-s351086');
+        break;
+    }
+  });
+});
 
 // === Server Status ===
 async function fetchServer(){
@@ -369,9 +692,6 @@ async function fetchServer(){
     players.textContent='-';
   }
 }
-setInterval(()=>{
-  if(panels.status.classList.contains('active')) fetchServer();
-},10000);
 
 // === Theme Toggle ===
 const toggle=document.getElementById('themeToggle');
@@ -437,7 +757,6 @@ function applyLanguage(lang) {
   localStorage.setItem('az_lang', lang);
   const data = langData[lang];
   document.documentElement.lang = lang;
-  // Update UI
   document.getElementById('welcomeTitle').textContent = data.welcomeTitle;
   document.getElementById('welcomeDesc').textContent = data.welcomeDesc;
   document.getElementById('welcomeBtn').textContent = data.welcomeBtn;
@@ -472,11 +791,11 @@ document.getElementById('resetSettings').addEventListener('click', () => {
   }
 });
 
-// === Close Drawer on Outside Click ===
+// Close sidebar when clicking outside
 document.addEventListener('click', (e) => {
-  const hamburger = document.getElementById('hamburger');
-  if (drawer.classList.contains('open') && !drawer.contains(e.target) && e.target !== hamburger) {
-    drawer.classList.remove('open');
+  if(sidebarState !== 'hidden' && !sidebar.contains(e.target)){
+    sidebarState = 'hidden';
+    updateSidebar();
   }
 });
 </script>

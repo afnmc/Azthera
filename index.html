@@ -481,7 +481,7 @@ body::before{
   <section class="panel" id="statusPanel">
     <div class="box">
       <h2 id="statusTitle">Status Server</h2>
-      <div class="status-item"><span id="statusAddr">Alamat</span><span>n-2.nura.host:25565</span></div>
+      <div class="status-item"><span id="statusAddr">Alamat</span><span>nano-1.nura.host:25565</span></div>
       <div class="status-item"><span id="statusLabel">Status</span><span id="serverState">Checking...</span></div>
       <div class="status-item"><span id="playersLabel">Players</span><span id="serverPlayers">-</span></div>
     </div>
@@ -669,7 +669,7 @@ sidebarLinks.forEach(link => {
         openPanel('settings');
         break;
       case 'shop':
-        openExternalLink('https://sociabuzz.com/azthera_smp/shop');
+        openExternalLink('https://azthera-smp.tebex.io/');
         break;
       case 'support':
         openExternalLink('https://minecraft-mp.com/server-s351086');
@@ -683,7 +683,7 @@ async function fetchServer(){
   const state=document.getElementById('serverState');
   const players=document.getElementById('serverPlayers');
   try{
-    const res=await fetch('https://api.mcstatus.io/v2/status/java/n-2.nura.host:25565',{cache:'no-store'});
+    const res=await fetch('https://api.mcstatus.io/v2/status/java/nano-1.nura.host:25565',{cache:'no-store'});
     const data=await res.json();
     state.textContent=data.online?'🟢 Online':'🔴 Offline';
     players.textContent=data.players?.online+'/'+data.players?.max;

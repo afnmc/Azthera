@@ -28,10 +28,16 @@
   --glass-shadow:0 8px 32px rgba(0,0,0,0.08);--glass-shadow-hover:0 12px 48px rgba(42,110,220,0.15);
 }
 *{box-sizing:border-box;margin:0;padding:0;font-family:Inter,system-ui,-apple-system,sans-serif;}
-html,body{height:100%;overflow:hidden;color:var(--muted-dark);transition:color .25s ease;}
-body{background-color:var(--bg-dark);background-image:var(--bg-img-dark);background-size:cover;background-position:center;background-attachment:fixed;background-repeat:no-repeat;}
-[data-theme="light"] body{background-image:var(--bg-img-light);}
-body::after{content:"";position:fixed;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0.4) 0%,rgba(0,0,0,0.1) 50%,rgba(0,0,0,0.5) 100%);z-index:-1;pointer-events:none;}
+html,body{height:100%;overflow:hidden;color:var(--muted-dark);transition:color .25s ease;background:var(--bg-dark);}
+
+/* ===== BACKGROUND CROSSFADE (NGUMPIL DULU) ===== */
+.bg-layer{position:fixed;inset:0;z-index:-2;pointer-events:none;background-size:cover;background-position:center;background-attachment:fixed;background-repeat:no-repeat;transition:opacity 0.9s cubic-bezier(0.4,0,0.2,1);}
+.bg-dark{background-image:var(--bg-img-dark);opacity:1;}
+.bg-light{background-image:var(--bg-img-light);opacity:0;}
+[data-theme="light"] .bg-dark{opacity:0;}
+[data-theme="light"] .bg-light{opacity:1;}
+.bg-overlay{position:fixed;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,0.45) 0%,rgba(0,0,0,0.05) 50%,rgba(0,0,0,0.55) 100%);transition:opacity .8s ease;}
+[data-theme="light"] .bg-overlay{opacity:0.25;}
 
 /* ===== GLASS ===== */
 .glass{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius-md);backdrop-filter:var(--backdrop-blur);-webkit-backdrop-filter:var(--backdrop-blur);box-shadow:var(--glass-shadow);transition:all .25s ease;}
@@ -39,15 +45,24 @@ body::after{content:"";position:fixed;inset:0;background:linear-gradient(180deg,
 .glass-panel{background:var(--panel-dark);border:1px solid var(--glass-border);border-radius:var(--radius-lg);backdrop-filter:var(--backdrop-blur);-webkit-backdrop-filter:var(--backdrop-blur);box-shadow:var(--glass-shadow);position:relative;overflow:hidden;}
 .glass-panel::after{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1px;background:linear-gradient(135deg,transparent,rgba(47,135,230,0.2),transparent);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);mask-composite:exclude;-webkit-mask-composite:xor;pointer-events:none;}
 
-/* ===== ICONS ===== */
+/* ===== ICONS & ANIMATIONS ===== */
 .icon{width:var(--icon-size);height:var(--icon-size);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;}
-.icon svg{width:100%;height:100%;stroke:currentColor;stroke-width:var(--icon-stroke);stroke-linecap:round;stroke-linejoin:round;fill:none;transition:all .2s ease;}
-.icon-lg{--icon-size:24px;}.icon-sm{--icon-size:16px;}
+.icon svg{width:100%;height:100%;stroke:currentColor;stroke-width:var(--icon-stroke);stroke-linecap:round;stroke-linejoin:round;fill:none;transition:all .2s ease;}.icon-lg{--icon-size:24px;}.icon-sm{--icon-size:16px;}
 .link-icon:hover .icon svg,.link-icon.active .icon svg{stroke:var(--accent-blue);transform:scale(1.05);}
 .icon i{font-size:calc(var(--icon-size)*0.85);transition:color .2s ease,transform .2s ease;}
 .link-icon:hover .icon i,.link-icon.active .icon i{color:var(--accent-blue);transform:scale(1.1);}
 
-/* ===== LOADING ===== */#loadingScreen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;background:#02030a;z-index:999;opacity:1;transition:opacity .8s ease;}
+/* Panah Lanjut Animasi */
+.closeWelcome .icon svg{transition:transform .3s cubic-bezier(.34,1.56,.64,1);}
+.closeWelcome:hover .icon svg{transform:translateX(5px);}
+.closeWelcome .icon svg path:last-child{transition:transform .3s ease;transform-origin:left center;}
+.closeWelcome:hover .icon svg path:last-child{transform:translateX(3px) scaleX(1.15);}
+@keyframes arrowPulse{0%,100%{transform:translateX(0);}50%{transform:translateX(2px);}}
+.closeWelcome .icon svg{animation:arrowPulse 2.5s ease-in-out infinite;}
+.closeWelcome:hover .icon svg{animation:none;}
+
+/* ===== LOADING ===== */
+#loadingScreen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;background:#02030a;z-index:999;opacity:1;transition:opacity .8s ease;}
 #galaxyCanvas{position:absolute;inset:0;width:100%;height:100%;display:block;}
 .loader-content{position:relative;z-index:10;text-align:center;padding:20px;}
 .loader-text{color:#fff;font-weight:700;font-size:22px;letter-spacing:2px;text-shadow:0 0 20px rgba(47,135,230,0.8),0 0 40px rgba(124,58,237,0.5);animation:fadeText 1.5s ease-in-out infinite,glowPulse 2s ease-in-out infinite;}
@@ -81,8 +96,7 @@ body::after{content:"";position:fixed;inset:0;background:linear-gradient(180deg,
 .sidebar-wrapper.full .sidebar-logo{opacity:1;transform:translateX(0);}.sidebar-wrapper.mini .sidebar-logo{display:none;}
 .sidebar-list{list-style:none;padding:16px 8px;display:flex;flex-direction:column;gap:6px;flex:1;}
 .sidebar-item{position:relative;}
-.sidebar-link{display:flex;align-items:center;gap:12px;padding:12px;background:transparent;border:none;border-radius:var(--radius-sm);color:var(--muted-dark);font-weight:600;font-size:.9rem;cursor:pointer;width:100%;text-align:left;transition:all .3s cubic-bezier(.4,0,.2,1);white-space:nowrap;overflow:hidden;position:relative;border:1px solid transparent;}
-.sidebar-link::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);height:60%;width:3px;background:linear-gradient(to bottom,var(--accent-blue),var(--accent-purple));border-radius:0 4px 4px 0;opacity:0;transition:all .3s ease;box-shadow:0 0 10px rgba(47,135,230,0.5);}
+.sidebar-link{display:flex;align-items:center;gap:12px;padding:12px;background:transparent;border:none;border-radius:var(--radius-sm);color:var(--muted-dark);font-weight:600;font-size:.9rem;cursor:pointer;width:100%;text-align:left;transition:all .3s cubic-bezier(.4,0,.2,1);white-space:nowrap;overflow:hidden;position:relative;border:1px solid transparent;}.sidebar-link::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);height:60%;width:3px;background:linear-gradient(to bottom,var(--accent-blue),var(--accent-purple));border-radius:0 4px 4px 0;opacity:0;transition:all .3s ease;box-shadow:0 0 10px rgba(47,135,230,0.5);}
 .sidebar-link:hover::before,.sidebar-link.active::before{opacity:1;}
 .sidebar-link:hover,.sidebar-link.active{background:var(--glass-bg-hover);color:var(--accent-blue);transform:translateX(4px);box-shadow:var(--glass-shadow-hover);border-color:var(--glass-border-hover);}
 .sidebar-icon{display:flex;align-items:center;justify-content:center;transition:transform .3s ease;}
@@ -96,7 +110,8 @@ body::after{content:"";position:fixed;inset:0;background:linear-gradient(180deg,
 .sidebar-wrapper.mini ~ .main-content{margin-left:var(--sidebar-width-mini);width:calc(100% - var(--sidebar-width-mini));}
 .sidebar-wrapper.full ~ .main-content{margin-left:var(--sidebar-width-full);width:calc(100% - var(--sidebar-width-full));}
 .panel{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px;z-index:130;background:transparent;}
-.panel.active{display:flex;}.panel .box{background:var(--panel-dark);border:1px solid var(--glass-border);border-radius:var(--radius-lg);backdrop-filter:var(--backdrop-blur);-webkit-backdrop-filter:var(--backdrop-blur);box-shadow:var(--glass-shadow);padding:32px;width:100%;max-width:500px;display:flex;flex-direction:column;align-items:center;position:relative;overflow:hidden;}
+.panel.active{display:flex;}
+.panel .box{background:var(--panel-dark);border:1px solid var(--glass-border);border-radius:var(--radius-lg);backdrop-filter:var(--backdrop-blur);-webkit-backdrop-filter:var(--backdrop-blur);box-shadow:var(--glass-shadow);padding:32px;width:100%;max-width:500px;display:flex;flex-direction:column;align-items:center;position:relative;overflow:hidden;}
 .panel .box::after{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1px;background:linear-gradient(135deg,transparent,rgba(47,135,230,0.2),transparent);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);mask-composite:exclude;-webkit-mask-composite:xor;pointer-events:none;}
 .panel .box>*{opacity:0;transform:translateY(-25px);animation:fadeSlideDown .6s ease forwards;}
 .panel.active .box>*:nth-child(1){animation-delay:.2s;}.panel.active .box>*:nth-child(2){animation-delay:.4s;}.panel.active .box>*:nth-child(3){animation-delay:.6s;}
@@ -131,6 +146,10 @@ body::after{content:"";position:fixed;inset:0;background:linear-gradient(180deg,
 </style>
 </head>
 <body>
+<!-- Background Layers (Crossfade) -->
+<div class="bg-layer bg-dark"></div>
+<div class="bg-layer bg-light"></div>
+<div class="bg-overlay"></div>
 
 <div id="loadingScreen"><canvas id="galaxyCanvas"></canvas><div class="loader-content"><div class="loader-text">Loading Azthera SMP...</div><div class="loader-subtext">Menyiapkan galaksi untuk petualanganmu</div></div></div>
 <div id="welcome"><div class="box"><h2 id="welcomeTitle"><span class="icon icon-lg"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></span> Azthera SMP</h2><p id="welcomeDesc">Klik tombol di bawah untuk masuk ke halaman utama dan mulai petualanganmu.</p><button class="closeWelcome" id="welcomeBtn"><span class="icon"><svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg></span><span id="welcomeBtnText">Lanjut</span></button></div></div>
@@ -145,6 +164,7 @@ body::after{content:"";position:fixed;inset:0;background:linear-gradient(180deg,
 
 <script>
 let galaxyScene,galaxyCamera,galaxyRenderer,galaxyPoints,galaxyClock,animId;
+
 /* ===== GALAXY ===== */
 function initGalaxy(){
   const canvas=document.getElementById('galaxyCanvas');
@@ -174,8 +194,7 @@ function initGalaxy(){
     }
     g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('color',new THREE.BufferAttribute(col,3));
     const mat=new THREE.PointsMaterial({size:p.size,sizeAttenuation:true,depthWrite:false,blending:THREE.AdditiveBlending,vertexColors:true,transparent:true,opacity:.9});
-    galaxyPoints=new THREE.Points(g,mat);galaxyPoints.rotation.x=-.4;galaxyPoints.rotation.z=.2;
-    galaxyScene.add(galaxyPoints);
+    galaxyPoints=new THREE.Points(g,mat);galaxyPoints.rotation.x=-.4;galaxyPoints.rotation.z=.2;    galaxyScene.add(galaxyPoints);
   }catch(e){console.error('Galaxy geometry:',e);return false;}
   galaxyClock=new THREE.Clock();
   (function animate(){
@@ -194,7 +213,8 @@ function preloadImages(urls){
   });
 }
 
-/* ===== INIT ===== */window.addEventListener('DOMContentLoaded',async()=>{
+/* ===== INIT ===== */
+window.addEventListener('DOMContentLoaded',async()=>{
   const loading=document.getElementById('loadingScreen');
   const welcome=document.getElementById('welcome');
   loading.style.display='flex';loading.style.opacity='1';
@@ -223,8 +243,7 @@ if(innerWidth>768){sidebar.addEventListener('mouseenter',()=>{if(sidebarState===
 /* ===== PANELS ===== */
 const panels={home:document.getElementById('homePanel'),status:document.getElementById('statusPanel'),settings:document.getElementById('settingsPanel')};
 const sidebarLinks=document.querySelectorAll('.sidebar-link');
-function openPanel(n){Object.values(panels).forEach(p=>p?.classList.remove('active'));if(panels[n])panels[n].classList.add('active');sidebarLinks.forEach(l=>{l.classList.remove('active');if(l.dataset.panel===n)l.classList.add('active');});setTimeout(()=>{sidebarState='hidden';updateSidebar();},300);}
-function openExternal(u){window.open(u,'_blank');sidebarState='hidden';updateSidebar();}
+function openPanel(n){Object.values(panels).forEach(p=>p?.classList.remove('active'));if(panels[n])panels[n].classList.add('active');sidebarLinks.forEach(l=>{l.classList.remove('active');if(l.dataset.panel===n)l.classList.add('active');});setTimeout(()=>{sidebarState='hidden';updateSidebar();},300);}function openExternal(u){window.open(u,'_blank');sidebarState='hidden';updateSidebar();}
 sidebarLinks.forEach(l=>{l.addEventListener('click',()=>{const p=l.dataset.panel;switch(p){case'home':openPanel('home');break;case'status':openPanel('status');fetchServer();break;case'settings':openPanel('settings');break;case'shop':openExternal('https://azthera-smp.tebex.io/');break;case'support':openExternal('https://minecraft-mp.com/server-s351086');break;}});});
 
 /* ===== SERVER ===== */
@@ -243,7 +262,8 @@ document.getElementById('languageSelect').value=currentLang;
 document.getElementById('languageSelect').addEventListener('change',e=>{applyLanguage(e.target.value);alert(currentLang==='en'?'Language changed to English.':'Bahasa diubah ke Indonesia.');});
 applyLanguage(currentLang);
 
-/* ===== RESET & CLOSE ===== */document.getElementById('resetSettings').addEventListener('click',()=>{if(confirm('Yakin ingin menghapus semua pengaturan?')){localStorage.clear();location.reload();}});
+/* ===== RESET & CLOSE ===== */
+document.getElementById('resetSettings').addEventListener('click',()=>{if(confirm('Yakin ingin menghapus semua pengaturan?')){localStorage.clear();location.reload();}});
 document.addEventListener('click',e=>{if(sidebarState!=='hidden'&&!sidebar.contains(e.target)){sidebarState='hidden';updateSidebar();}});
 </script>
 </body>

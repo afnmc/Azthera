@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
 <style>
+/* ===== VARIABLES ===== */
 :root{
   --bg-dark:#060609;--panel-dark:#0f1114;--muted-dark:#9aa6b2;--text-primary:#ffffff;
   --accent-blue:#2f87e6;--accent-purple:#7c3aed;--accent-cyan:#06b6d4;
@@ -28,35 +29,74 @@
 *{box-sizing:border-box;margin:0;padding:0;font-family:Inter,system-ui,-apple-system,sans-serif;}
 html,body{height:100%;overflow:hidden;color:var(--muted-dark);transition:color .25s ease;background:var(--bg-dark);}
 
-/* ===== BACKGROUND PNG CROSSFADE LAYERS ===== */
-.bg-dark-layer,.bg-light-layer{
+/* ===== 1. ANIMASI ===== */
+
+/* --- Panah Lanjut: Idle breathing + hover geser kanan --- */
+@keyframes arrowPulse{
+  0%,100%{transform:translateX(0);}
+  50%{transform:translateX(4px);}
+}
+.arrow-icon{display:inline-flex;align-items:center;}
+.arrow-icon svg{animation:arrowPulse 2s ease-in-out infinite;transition:transform .3s cubic-bezier(.34,1.56,.64,1);}
+.arrow-icon:hover svg{animation:none;transform:translateX(8px);}
+.arrow-icon:hover .arrow-head{transform:translateX(2px) scaleX(1.2);}
+.arrow-head{transition:transform .3s ease;transform-origin:center;}
+
+/* --- Panel fade in stagger --- */
+@keyframes fadeUp{from{opacity:0;transform:translateY(25px);}to{opacity:1;transform:translateY(0);}}
+
+/* --- Welcome box slide in --- */
+@keyframes slideDown{from{opacity:0;transform:translateY(-40px);}to{opacity:1;transform:translateY(0);}}
+/* --- Loading text glow --- */
+@keyframes fadeText{0%,100%{opacity:.5;}50%{opacity:1;}}
+@keyframes glowPulse{
+  0%,100%{text-shadow:0 0 20px rgba(47,135,230,0.8),0 0 40px rgba(124,58,237,0.5);}
+  50%{text-shadow:0 0 30px rgba(47,135,230,1),0 0 60px rgba(124,58,237,0.8),0 0 80px rgba(6,182,212,0.6);}
+}
+
+/* --- Button shine sweep --- */
+.btn-shine{position:relative;overflow:hidden;}
+.btn-shine::before{
+  content:"";position:absolute;top:0;left:-100%;width:100%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);
+  transition:left .4s ease;
+}
+.btn-shine:hover::before{left:100%;}
+
+/* --- Sidebar indicator glow --- */
+@keyframes indicatorPulse{0%,100%{box-shadow:0 0 10px rgba(47,135,230,0.5);}50%{box-shadow:0 0 20px rgba(47,135,230,0.8);}}
+
+/* ===== 2. BACKGROUND PNG (CROSSFADE) ===== */
+.bg-layer{
   position:fixed;inset:0;z-index:-2;pointer-events:none;
   background-size:cover;background-position:center;
   background-attachment:fixed;background-repeat:no-repeat;
-  transition:opacity 0.9s cubic-bezier(0.4,0,0.2,1);
-  -webkit-transition:opacity 0.9s cubic-bezier(0.4,0,0.2,1);
-}
-.bg-dark-layer{
-  background-image:url("https://i.ibb.co.com/0Vdk3m46/Screenshot-2025-10-25-10-02-05-63-84181a524dcfbce864002b17997a7b1d.png");
   opacity:1;
+  -webkit-transition:opacity 1s ease;
+  transition:opacity 1s ease;
 }
-.bg-light-layer{
+.bg-layer-dark{
+  background-image:url("https://i.ibb.co.com/0Vdk3m46/Screenshot-2025-10-25-10-02-05-63-84181a524dcfbce864002b17997a7b1d.png");
+}
+.bg-layer-light{
   background-image:url("https://i.ibb.co.com/v4bJgCTX/Screenshot-2025-10-25-10-01-17-37-84181a524dcfbce864002b17997a7b1d.png");
   opacity:0;
 }
-[data-theme="light"] .bg-dark-layer{opacity:0;}
-[data-theme="light"] .bg-light-layer{opacity:1;}
+/* Ganti tema: yang satu fade out, satunya fade in — ngumpil dulu */
+[data-theme="light"] .bg-layer-dark{opacity:0;}
+[data-theme="light"] .bg-layer-light{opacity:1;}
 
-.bg-overlay{  position:fixed;inset:0;z-index:-1;pointer-events:none;
+.bg-overlay{
+  position:fixed;inset:0;z-index:-1;pointer-events:none;
   background:linear-gradient(180deg,rgba(0,0,0,0.45) 0%,rgba(0,0,0,0.05) 50%,rgba(0,0,0,0.55) 100%);
-  transition:opacity 0.9s ease;
+  -webkit-transition:opacity 1s ease;
+  transition:opacity 1s ease;
 }
 [data-theme="light"] .bg-overlay{opacity:0.3;}
 
 /* ===== GLASS ===== */
 .glass{
-  background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius-md);
-  backdrop-filter:var(--backdrop-blur);-webkit-backdrop-filter:var(--backdrop-blur);
+  background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius-md);  -webkit-backdrop-filter:var(--backdrop-blur);backdrop-filter:var(--backdrop-blur);
   box-shadow:var(--glass-shadow);transition:all .25s ease;
 }
 .glass:hover{
@@ -65,7 +105,7 @@ html,body{height:100%;overflow:hidden;color:var(--muted-dark);transition:color .
 }
 .glass-panel{
   background:var(--panel-dark);border:1px solid var(--glass-border);border-radius:var(--radius-lg);
-  backdrop-filter:var(--backdrop-blur);-webkit-backdrop-filter:var(--backdrop-blur);
+  -webkit-backdrop-filter:var(--backdrop-blur);backdrop-filter:var(--backdrop-blur);
   box-shadow:var(--glass-shadow);position:relative;overflow:hidden;
 }
 .glass-panel::after{
@@ -83,44 +123,35 @@ html,body{height:100%;overflow:hidden;color:var(--muted-dark);transition:color .
 .icon i{font-size:calc(var(--icon-size)*0.85);transition:color .2s ease,transform .2s ease;}
 .link-icon:hover .icon i,.link-icon.active .icon i{color:var(--accent-blue);transform:scale(1.1);}
 
-/* ===== ARROW ANIMATION ===== */
-.arrow-pulse svg{animation:arrowBreathe 2.5s ease-in-out infinite;}
-.arrow-move:hover svg{transform:translateX(6px);animation:none;}
-.arrow-move svg path:last-child{transition:transform .3s ease;transform-origin:left center;}
-.arrow-move:hover svg path:last-child{transform:translateX(3px) scaleX(1.2);}
-@keyframes arrowBreathe{0%,100%{transform:translateX(0);}50%{transform:translateX(3px);}}
-
 /* ===== LOADING ===== */
 #loadingScreen{
   position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;
-  background:#02030a;z-index:999;opacity:1;transition:opacity .8s ease;
+  background:#02030a;z-index:999;opacity:1;
+  -webkit-transition:opacity .8s ease;
+  transition:opacity .8s ease;
 }
 #galaxyCanvas{position:absolute;inset:0;width:100%;height:100%;display:block;}
-.loader-content{position:relative;z-index:10;text-align:center;padding:20px;}.loader-text{
+.loader-content{position:relative;z-index:10;text-align:center;padding:20px;}
+.loader-text{
   color:#fff;font-weight:700;font-size:22px;letter-spacing:2px;
   text-shadow:0 0 20px rgba(47,135,230,0.8),0 0 40px rgba(124,58,237,0.5);
   animation:fadeText 1.5s ease-in-out infinite,glowPulse 2s ease-in-out infinite;
 }
 .loader-subtext{color:rgba(255,255,255,0.6);font-size:13px;margin-top:8px;letter-spacing:1px;}
-@keyframes fadeText{0%,100%{opacity:.5;}50%{opacity:1;}}
-@keyframes glowPulse{
-  0%,100%{text-shadow:0 0 20px rgba(47,135,230,0.8),0 0 40px rgba(124,58,237,0.5);}
-  50%{text-shadow:0 0 30px rgba(47,135,230,1),0 0 60px rgba(124,58,237,0.8),0 0 80px rgba(6,182,212,0.6);}
-}
 
 /* ===== WELCOME ===== */
 #welcome{
   position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
-  background:rgba(0,0,0,0.5);z-index:200;text-align:center;display:none;backdrop-filter:blur(8px);
+  background:rgba(0,0,0,0.5);z-index:200;text-align:center;display:none;
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
 }
-#welcome .box{
-  background:var(--panel-dark);border:1px solid var(--glass-border);border-radius:var(--radius-lg);
-  backdrop-filter:var(--backdrop-blur);-webkit-backdrop-filter:var(--backdrop-blur);
+#welcome .box{  background:var(--panel-dark);border:1px solid var(--glass-border);border-radius:var(--radius-lg);
+  -webkit-backdrop-filter:var(--backdrop-blur);backdrop-filter:var(--backdrop-blur);
   box-shadow:var(--glass-shadow);padding:30px 34px;max-width:440px;
-  transform:translateY(-40px);animation:fadeSlideDown .8s ease forwards;text-align:center;
+  transform:translateY(-40px);animation:slideDown .8s ease forwards;text-align:center;
 }
 #welcome .box h2,#welcome .box p,#welcome .box button{
-  opacity:0;transform:translateY(-30px);animation:fadeSlideDown .7s ease forwards;
+  opacity:0;transform:translateY(-30px);animation:fadeUp .7s ease forwards;
   animation-play-state:paused;position:relative;
 }
 #welcome.show .box h2,#welcome.show .box p,#welcome.show .box button{animation-play-state:running;}
@@ -130,7 +161,6 @@ html,body{height:100%;overflow:hidden;color:var(--muted-dark);transition:color .
 }
 #welcome .box p{animation-delay:.45s;line-height:1.5;}
 #welcome .box button{animation-delay:.7s;}
-@keyframes fadeSlideDown{from{opacity:0;transform:translateY(-25px);}to{opacity:1;transform:translateY(0);}}
 
 .closeWelcome{
   margin-top:20px;padding:12px 24px;
@@ -140,12 +170,7 @@ html,body{height:100%;overflow:hidden;color:var(--muted-dark);transition:color .
   box-shadow:0 0 20px rgba(47,135,230,0.4);position:relative;overflow:hidden;
   display:inline-flex;align-items:center;gap:8px;
 }
-.closeWelcome::before{
-  content:"";position:absolute;top:0;left:-100%;width:100%;height:100%;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);
-  transition:left .4s ease;
-}
-.closeWelcome:hover::before{left:100%;}.closeWelcome:hover{
+.closeWelcome:hover{
   transform:scale(1.05) translateY(-2px);
   box-shadow:0 0 35px rgba(47,135,230,0.7),0 0 60px rgba(124,58,237,0.4);
 }
@@ -154,7 +179,7 @@ html,body{height:100%;overflow:hidden;color:var(--muted-dark);transition:color .
 #hamburger{
   position:fixed;top:14px;left:14px;z-index:150;
   background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius-sm);
-  backdrop-filter:var(--backdrop-blur);-webkit-backdrop-filter:var(--backdrop-blur);
+  -webkit-backdrop-filter:var(--backdrop-blur);backdrop-filter:var(--backdrop-blur);
   box-shadow:var(--glass-shadow);color:var(--accent-blue);
   padding:10px 12px;cursor:pointer;font-size:1.1rem;
   display:flex;align-items:center;justify-content:center;transition:all .3s ease;
@@ -169,8 +194,8 @@ html,body{height:100%;overflow:hidden;color:var(--muted-dark);transition:color .
 .sidebar-wrapper{
   position:fixed;left:0;top:0;height:100%;width:var(--sidebar-width-hidden);
   background:var(--panel-dark);border-right:1px solid var(--glass-border);
-  transition:width .3s cubic-bezier(.4,0,.2,1);z-index:145;
-  display:flex;flex-direction:column;overflow:hidden;
+  -webkit-transition:width .3s cubic-bezier(.4,0,.2,1);  transition:width .3s cubic-bezier(.4,0,.2,1);
+  z-index:145;display:flex;flex-direction:column;overflow:hidden;
   box-shadow:4px 0 30px rgba(0,0,0,0.4);border-radius:0;
 }
 .sidebar-wrapper.mini{width:var(--sidebar-width-mini);}
@@ -188,13 +213,16 @@ html,body{height:100%;overflow:hidden;color:var(--muted-dark);transition:color .
 .sidebar-link{
   display:flex;align-items:center;gap:12px;padding:12px;background:transparent;border:none;
   border-radius:var(--radius-sm);color:var(--muted-dark);font-weight:600;font-size:.9rem;
-  cursor:pointer;width:100%;text-align:left;transition:all .3s cubic-bezier(.4,0,.2,1);
+  cursor:pointer;width:100%;text-align:left;
+  -webkit-transition:all .3s cubic-bezier(.4,0,.2,1);
+  transition:all .3s cubic-bezier(.4,0,.2,1);
   white-space:nowrap;overflow:hidden;position:relative;border:1px solid transparent;
 }
 .sidebar-link::before{
   content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);height:60%;width:3px;
   background:linear-gradient(to bottom,var(--accent-blue),var(--accent-purple));
-  border-radius:0 4px 4px 0;opacity:0;transition:all .3s ease;  box-shadow:0 0 10px rgba(47,135,230,0.5);
+  border-radius:0 4px 4px 0;opacity:0;transition:all .3s ease;
+  animation:indicatorPulse 3s ease-in-out infinite;
 }
 .sidebar-link:hover::before,.sidebar-link.active::before{opacity:1;}
 .sidebar-link:hover,.sidebar-link.active{
@@ -212,14 +240,10 @@ html,body{height:100%;overflow:hidden;color:var(--muted-dark);transition:color .
 .main-content{margin-left:0;transition:margin-left .3s cubic-bezier(.4,0,.2,1);height:100%;width:100%;}
 .sidebar-wrapper.mini ~ .main-content{margin-left:var(--sidebar-width-mini);width:calc(100% - var(--sidebar-width-mini));}
 .sidebar-wrapper.full ~ .main-content{margin-left:var(--sidebar-width-full);width:calc(100% - var(--sidebar-width-full));}
-.panel{
-  position:fixed;inset:0;display:none;flex-direction:column;
-  align-items:center;justify-content:center;padding:20px;z-index:130;background:transparent;
-}
+.panel{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px;z-index:130;background:transparent;}
 .panel.active{display:flex;}
 .panel .box{
-  background:var(--panel-dark);border:1px solid var(--glass-border);border-radius:var(--radius-lg);
-  backdrop-filter:var(--backdrop-blur);-webkit-backdrop-filter:var(--backdrop-blur);
+  background:var(--panel-dark);border:1px solid var(--glass-border);border-radius:var(--radius-lg);  -webkit-backdrop-filter:var(--backdrop-blur);backdrop-filter:var(--backdrop-blur);
   box-shadow:var(--glass-shadow);padding:32px;width:100%;max-width:500px;
   display:flex;flex-direction:column;align-items:center;position:relative;overflow:hidden;
 }
@@ -229,21 +253,19 @@ html,body{height:100%;overflow:hidden;color:var(--muted-dark);transition:color .
   -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
   mask-composite:exclude;-webkit-mask-composite:xor;pointer-events:none;
 }
-.panel .box>*{opacity:0;transform:translateY(-25px);animation:fadeSlideDown .6s ease forwards;}
+.panel .box>*{opacity:0;transform:translateY(-25px);animation:fadeUp .6s ease forwards;}
 .panel.active .box>*:nth-child(1){animation-delay:.2s;}
 .panel.active .box>*:nth-child(2){animation-delay:.4s;}
 .panel.active .box>*:nth-child(3){animation-delay:.6s;}
 .panel.active .box>*:nth-child(4){animation-delay:.8s;}
 .panel.active .box>*:nth-child(5){animation-delay:1s;}
 .panel.active .box>*:nth-child(6){animation-delay:1.2s;}
-.panel h2{
-  color:var(--accent-blue);margin-bottom:16px;font-size:2rem;
-  text-shadow:0 0 20px rgba(47,135,230,0.3);display:flex;align-items:center;gap:10px;
-}
+.panel h2{color:var(--accent-blue);margin-bottom:16px;font-size:2rem;text-shadow:0 0 20px rgba(47,135,230,0.3);display:flex;align-items:center;gap:10px;}
 
 /* ===== HOME LINKS ===== */
 .home-link{
-  background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius-md);  backdrop-filter:var(--backdrop-blur);-webkit-backdrop-filter:var(--backdrop-blur);
+  background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius-md);
+  -webkit-backdrop-filter:var(--backdrop-blur);backdrop-filter:var(--backdrop-blur);
   box-shadow:var(--glass-shadow);display:flex;align-items:center;justify-content:center;
   gap:12px;padding:14px 20px;margin:8px 0;color:inherit;font-weight:700;text-decoration:none;
   width:100%;max-width:260px;text-align:center;transition:all .25s ease;
@@ -254,32 +276,23 @@ html,body{height:100%;overflow:hidden;color:var(--muted-dark);transition:color .
   background:linear-gradient(135deg,rgba(47,135,230,0.08),rgba(124,58,237,0.08));
   opacity:0;transition:opacity .25s ease;
 }
-.home-link:hover{
-  background:var(--glass-bg-hover);border-color:var(--glass-border-hover);
-  transform:translateX(4px);box-shadow:var(--glass-shadow-hover);
-}
+.home-link:hover{background:var(--glass-bg-hover);border-color:var(--glass-border-hover);transform:translateX(4px);box-shadow:var(--glass-shadow-hover);}
 .home-link:hover::before{opacity:1;}
 .home-link:active{transform:translateX(2px) scale(0.99);}
 
 /* ===== STATUS & SETTINGS ===== */
 .status-item,.settings-item{
   background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius-md);
-  backdrop-filter:var(--backdrop-blur);-webkit-backdrop-filter:var(--backdrop-blur);
+  -webkit-backdrop-filter:var(--backdrop-blur);backdrop-filter:var(--backdrop-blur);
   box-shadow:var(--glass-shadow);width:100%;padding:14px 18px;margin:8px 0;
   display:flex;justify-content:space-between;align-items:center;
   font-weight:700;color:inherit;transition:all .25s ease;gap:10px;
 }
-.status-item:hover,.settings-item:hover{
-  background:var(--glass-bg-hover);border-color:var(--glass-border-hover);transform:translateX(4px);
-}
-.status-item span:last-child{
-  max-width:180px;overflow-x:auto;white-space:nowrap;text-align:right;
-  scrollbar-width:thin;color:var(--text-primary);
-}
+.status-item:hover,.settings-item:hover{background:var(--glass-bg-hover);border-color:var(--glass-border-hover);transform:translateX(4px);}
+.status-item span:last-child{max-width:180px;overflow-x:auto;white-space:nowrap;text-align:right;scrollbar-width:thin;color:var(--text-primary);}
 .status-item span:last-child::-webkit-scrollbar{height:4px;}
 .status-item span:last-child::-webkit-scrollbar-thumb{background:var(--accent-blue);border-radius:10px;}
-
-/* ===== TOGGLE & SELECT ===== */
+/* ===== TOGGLE ===== */
 .toggle-switch{
   position:relative;width:52px;height:26px;background:var(--glass-bg);
   border:1px solid var(--glass-border);border-radius:13px;cursor:pointer;
@@ -292,10 +305,12 @@ html,body{height:100%;overflow:hidden;color:var(--muted-dark);transition:color .
   box-shadow:0 2px 8px rgba(0,0,0,0.3);
 }
 .toggle-switch.active .lever{left:29px;background:var(--accent-cyan);}
+
+/* ===== SELECT ===== */
 #languageSelect{
   background:var(--glass-bg);border:1px solid var(--glass-border);color:var(--muted-dark);
   padding:8px 32px 8px 12px;border-radius:var(--radius-sm);font-weight:700;
-  appearance:none;min-width:140px;cursor:pointer;
+  -webkit-appearance:none;appearance:none;min-width:140px;cursor:pointer;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239aa6b2' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
   background-repeat:no-repeat;background-position:right 10px center;
   transition:all .2s ease;box-shadow:var(--glass-shadow);
@@ -303,6 +318,7 @@ html,body{height:100%;overflow:hidden;color:var(--muted-dark);transition:color .
 #languageSelect:hover{border-color:var(--glass-border-hover);box-shadow:var(--glass-shadow-hover);}
 #languageSelect:focus{outline:none;border-color:var(--accent-blue);box-shadow:0 0 0 3px rgba(47,135,230,0.2);}
 
+/* ===== RESET BTN ===== */
 #resetSettings{
   margin-top:16px;padding:12px 18px;
   background:linear-gradient(135deg,var(--accent-blue),var(--accent-purple));
@@ -323,16 +339,30 @@ html,body{height:100%;overflow:hidden;color:var(--muted-dark);transition:color .
 </head>
 <body>
 
-<!-- BACKGROUND PNG LAYERS (Crossfade) -->
-<div class="bg-dark-layer"></div>
-<div class="bg-light-layer"></div>
-<div class="bg-overlay"></div>
+<!-- BACKGROUND PNG (2 LAYERS - CROSSFADE) -->
+<div class="bg-layer bg-layer-dark"></div>
+<div class="bg-layer bg-layer-light"></div><div class="bg-overlay"></div>
 
 <!-- LOADING SCREEN -->
-<div id="loadingScreen"><canvas id="galaxyCanvas"></canvas><div class="loader-content"><div class="loader-text">Loading Azthera SMP...</div><div class="loader-subtext">Menyiapkan galaksi untuk petualanganmu</div></div></div>
+<div id="loadingScreen">
+  <canvas id="galaxyCanvas"></canvas>
+  <div class="loader-content">
+    <div class="loader-text">Loading Azthera SMP...</div>
+    <div class="loader-subtext">Menyiapkan galaksi untuk petualanganmu</div>
+  </div>
+</div>
 
 <!-- WELCOME -->
-<div id="welcome"><div class="box"><h2 id="welcomeTitle"><span class="icon icon-lg"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></span> Azthera SMP</h2><p id="welcomeDesc">Klik tombol di bawah untuk masuk ke halaman utama dan mulai petualanganmu.</p><button class="closeWelcome" id="welcomeBtn"><span class="icon arrow-pulse arrow-move"><svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg></span><span id="welcomeBtnText">Lanjut</span></button></div></div>
+<div id="welcome">
+  <div class="box">
+    <h2 id="welcomeTitle"><span class="icon icon-lg"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></span> Azthera SMP</h2>
+    <p id="welcomeDesc">Klik tombol di bawah untuk masuk ke halaman utama dan mulai petualanganmu.</p>
+    <button class="closeWelcome btn-shine" id="welcomeBtn">
+      <span class="icon arrow-icon"><svg viewBox="0 0 24 24"><path d="M5 12h14"/><path class="arrow-head" d="M12 5l7 7-7 7"/></svg></span>
+      <span id="welcomeBtnText">Lanjut</span>
+    </button>
+  </div>
+</div>
 
 <!-- HAMBURGER -->
 <button id="hamburger"><span class="icon"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></span></button>
@@ -341,7 +371,8 @@ html,body{height:100%;overflow:hidden;color:var(--muted-dark);transition:color .
 <aside class="sidebar-wrapper" id="sidebar">
   <div class="sidebar-header"><div class="sidebar-logo"><span class="icon icon-sm"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/></svg></span> Azthera SMP</div></div>
   <ul class="sidebar-list">
-    <li class="sidebar-item"><button class="sidebar-link active link-icon" data-panel="home"><span class="sidebar-icon icon"><svg viewBox="0 0 24 24"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg></span><span class="sidebar-text">Home</span></button></li>    <li class="sidebar-item"><button class="sidebar-link link-icon" data-panel="shop"><span class="sidebar-icon icon"><svg viewBox="0 0 24 24"><circle cx="9" cy="20" r="1.5"/><circle cx="17" cy="20" r="1.5"/><path d="M4 4h2l2.5 10h9l2-8H7"/><path d="M4 4v2"/></svg></span><span class="sidebar-text">Shop</span></button></li>
+    <li class="sidebar-item"><button class="sidebar-link active link-icon" data-panel="home"><span class="sidebar-icon icon"><svg viewBox="0 0 24 24"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg></span><span class="sidebar-text">Home</span></button></li>
+    <li class="sidebar-item"><button class="sidebar-link link-icon" data-panel="shop"><span class="sidebar-icon icon"><svg viewBox="0 0 24 24"><circle cx="9" cy="20" r="1.5"/><circle cx="17" cy="20" r="1.5"/><path d="M4 4h2l2.5 10h9l2-8H7"/><path d="M4 4v2"/></svg></span><span class="sidebar-text">Shop</span></button></li>
     <li class="sidebar-item"><button class="sidebar-link link-icon" data-panel="support"><span class="sidebar-icon icon"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 22l7.8-8.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg></span><span class="sidebar-text">Support</span></button></li>
     <li class="sidebar-item"><button class="sidebar-link link-icon" data-panel="status"><span class="sidebar-icon icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg></span><span class="sidebar-text">Server Status</span></button></li>
     <li class="sidebar-item"><button class="sidebar-link link-icon" data-panel="settings"><span class="sidebar-icon icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="2.5"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg></span><span class="sidebar-text">Settings</span></button></li>
@@ -357,204 +388,94 @@ html,body{height:100%;overflow:hidden;color:var(--muted-dark);transition:color .
 </div>
 
 <script>
-let galaxyScene,galaxyCamera,galaxyRenderer,galaxyPoints,galaxyClock,animId;
-let galaxyReady=false;
-
-/* ===== GALAXY - SAFE INIT ===== */
-function initGalaxy(){
-  if(typeof THREE==='undefined'){
-    console.warn('Three.js belum load, retry...');
-    setTimeout(initGalaxy,200);
-    return;
-  }
-  const canvas=document.getElementById('galaxyCanvas');
-  if(!canvas){console.warn('Canvas belum ada, retry...');setTimeout(initGalaxy,200);return;}
-  
+/* ===== GALAXY ===== */
+let gScene,gCamera,gRender,gPoints,gClock,gFrameId;
+function startGalaxy(){  var c=document.getElementById('galaxyCanvas');
+  if(typeof THREE==='undefined'){setTimeout(startGalaxy,300);return;}
+  if(!c){setTimeout(startGalaxy,300);return;}
   try{
-    if(animId)cancelAnimationFrame(animId);
-    if(galaxyRenderer){galaxyRenderer.dispose();galaxyRenderer=null;}
-    
-    galaxyScene=new THREE.Scene();
-    galaxyCamera=new THREE.PerspectiveCamera(75,innerWidth/innerHeight,0.1,1000);
-    galaxyCamera.position.set(0,2,7);
-    galaxyRenderer=new THREE.WebGLRenderer({canvas:canvas,antialias:true,alpha:true});
-    galaxyRenderer.setSize(innerWidth,innerHeight);
-    galaxyRenderer.setPixelRatio(Math.min(devicePixelRatio,2));
-    
-    const p={count:12000,size:0.025,radius:5,branches:5,spin:1.2,randomness:0.4,randomnessPower:3,insideColor:'#2f87e6',outsideColor:'#7c3aed'};
-    const g=new THREE.BufferGeometry();
-    const pos=new Float32Array(p.count*3),col=new Float32Array(p.count*3);
-    const c1=new THREE.Color(p.insideColor),c2=new THREE.Color(p.outsideColor);
-    
-    for(let i=0;i<p.count;i++){
-      const i3=i*3,r=Math.random()*p.radius,s=r*p.spin,b=((i%p.branches)/p.branches)*Math.PI*2;
-      const rx=Math.pow(Math.random(),p.randomnessPower)*(Math.random()<.5?1:-1)*p.randomness*r;
-      const ry=Math.pow(Math.random(),p.randomnessPower)*(Math.random()<.5?1:-1)*p.randomness*r;
-      const rz=Math.pow(Math.random(),p.randomnessPower)*(Math.random()<.5?1:-1)*p.randomness*r;      pos[i3]=Math.cos(b+s)*r+rx;pos[i3+1]=ry;pos[i3+2]=Math.sin(b+s)*r+rz;
-      const m=c1.clone();m.lerp(c2,r/p.radius);col[i3]=m.r;col[i3+1]=m.g;col[i3+2]=m.b;
-    }
-    g.setAttribute('position',new THREE.BufferAttribute(pos,3));
-    g.setAttribute('color',new THREE.BufferAttribute(col,3));
-    const mat=new THREE.PointsMaterial({size:p.size,sizeAttenuation:true,depthWrite:false,blending:THREE.AdditiveBlending,vertexColors:true,transparent:true,opacity:.9});
-    galaxyPoints=new THREE.Points(g,mat);
-    galaxyPoints.rotation.x=-.4;galaxyPoints.rotation.z=.2;
-    galaxyScene.add(galaxyPoints);
-    
-    galaxyClock=new THREE.Clock();
-    (function animate(){
-      animId=requestAnimationFrame(animate);
-      if(galaxyPoints&&galaxyClock)galaxyPoints.rotation.y=galaxyClock.getElapsedTime()*.08;
-      galaxyRenderer.render(galaxyScene,galaxyCamera);
-    })();
-    galaxyReady=true;
-    console.log('Galaxy ready!');
-  }catch(e){console.error('Galaxy error:',e);galaxyReady=false;}
+    if(gFrameId)cancelAnimationFrame(gFrameId);
+    if(gRender){gRender.dispose();gRender=null;}
+    gScene=new THREE.Scene();
+    gCamera=new THREE.PerspectiveCamera(75,innerWidth/innerHeight,0.1,1000);
+    gCamera.position.set(0,2,7);
+    gRender=new THREE.WebGLRenderer({canvas:c,antialias:true,alpha:true});
+    gRender.setSize(innerWidth,innerHeight);gRender.setPixelRatio(Math.min(devicePixelRatio,2));
+    var p={n:12000,sz:0.025,r:5,b:5,sp:1.2,rn:0.4,rp:3,c1:'#2f87e6',c2:'#7c3aed'};
+    var geo=new THREE.BufferGeometry();
+    var pos=new Float32Array(p.n*3),col=new Float32Array(p.n*3);
+    var cc=new THREE.Color(p.c1),c2=new THREE.Color(p.c2);
+    for(var i=0;i<p.n;i++){var j=i*3,r=Math.random()*p.r,s=r*p.sp,a=((i%p.b)/p.b)*Math.PI*2;
+    var x=Math.pow(Math.random(),p.rp)*(Math.random()<.5?1:-1)*p.rn*r;
+    var y=Math.pow(Math.random(),p.rp)*(Math.random()<.5?1:-1)*p.rn*r;
+    var z=Math.pow(Math.random(),p.rp)*(Math.random()<.5?1:-1)*p.rn*r;
+    pos[j]=Math.cos(a+s)*r+x;pos[j+1]=y;pos[j+2]=Math.sin(a+s)*r+z;
+    var m=cc.clone();m.lerp(c2,r/p.r);col[j]=m.r;col[j+1]=m.g;col[j+2]=m.b;}
+    geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+    geo.setAttribute('color',new THREE.BufferAttribute(col,3));
+    var mat=new THREE.PointsMaterial({size:p.sz,sizeAttenuation:true,depthWrite:false,blending:THREE.AdditiveBlending,vertexColors:true,transparent:true,opacity:.9});
+    gPoints=new THREE.Points(geo,mat);gPoints.rotation.x=-.4;gPoints.rotation.z=.2;gScene.add(gPoints);
+    gClock=new THREE.Clock();
+    !function loop(){gFrameId=requestAnimationFrame(loop);if(gPoints&&gClock)gPoints.rotation.y=gClock.getElapsedTime()*.08;gRender.render(gScene,gCamera);}();
+  }catch(e){console.error('Galaxy:',e);}
 }
 
 /* ===== PRELOAD ===== */
-function preloadImages(urls){
-  return new Promise(res=>{
-    if(!urls||urls.length===0)return res();
-    let c=0;
-    urls.forEach(u=>{
-      const i=new Image();
-      i.onload=i.onerror=()=>{if(++c>=urls.length)res();};
-      i.src=u+'?t='+Date.now();
-    });
+function preload(u){return new Promise(function(ok){if(!u||!u.length)return ok();var n=0;u.forEach(function(s){var i=new Image();i.onload=i.onerror=function(){if(++n>=u.length)ok();};i.src=s+'?t='+Date.now();});});}
+
+/* ===== INIT ===== */
+window.addEventListener('DOMContentLoaded',function(){
+  var ld=document.getElementById('loadingScreen');
+  var wl=document.getElementById('welcome');
+  ld.style.display='flex';ld.style.opacity='1';
+  startGalaxy();
+  preload(["https://i.ibb.co.com/Z64HHhkR/IMG-20251014-082055.jpg","https://i.ibb.co.com/bj7b4wPq/IMG-20251014-082040.jpg"]).then(function(){
+    setTimeout(function(){
+      ld.style.opacity='0';
+      setTimeout(function(){
+        ld.style.display='none';
+        wl.style.display='flex';void wl.offsetWidth;wl.classList.add('show');
+      },800);
+    },1200);
   });
-}
 
-/* ===== MAIN INIT ===== */
-window.addEventListener('DOMContentLoaded',async()=>{
-  const loading=document.getElementById('loadingScreen');
-  const welcome=document.getElementById('welcome');
-  
-  // Force loading visible
-  loading.style.display='flex';
-  loading.style.opacity='1';
-  
-  // Start galaxy
-  initGalaxy();
-  
-  // Preload images
-  await preloadImages([
-    "https://i.ibb.co.com/Z64HHhkR/IMG-20251014-082055.jpg",
-    "https://i.ibb.co.com/bj7b4wPq/IMG-20251014-082040.jpg"  ]);
-  
-  // Wait a bit so user sees galaxy
-  await new Promise(r=>setTimeout(r,1200));
-  
-  // Fade out loading
-  loading.style.opacity='0';
-  await new Promise(r=>setTimeout(r,800));
-  loading.style.display='none';
-  
-  // Show welcome
-  welcome.style.display='flex';
-  void welcome.offsetWidth;
-  welcome.classList.add('show');
-});
-
-/* ===== WELCOME CLOSE ===== */
-document.addEventListener('click',function handleWelcome(e){
-  if(e.target.closest('.closeWelcome')){
-    const welcome=document.getElementById('welcome');
-    welcome.style.display='none';
-    if(animId)cancelAnimationFrame(animId);
-    if(galaxyRenderer){galaxyRenderer.dispose();galaxyRenderer=null;}
-    document.removeEventListener('click',handleWelcome);
-  }
+  document.getElementById('welcomeBtn').addEventListener('click',function(){    wl.style.display='none';
+    if(gFrameId)cancelAnimationFrame(gFrameId);
+    if(gRender){gRender.dispose();gRender=null;}
+  });
 });
 
 /* ===== SIDEBAR ===== */
-const sidebar=document.getElementById('sidebar'),hamburger=document.getElementById('hamburger');
-let sidebarState='hidden';
-function updateSidebar(){
-  sidebar.classList.remove('hidden','mini','full');
-  if(sidebarState!=='hidden')sidebar.classList.add(sidebarState);
-  hamburger.classList.toggle('hidden',sidebarState!=='hidden');
-}
-hamburger.addEventListener('click',e=>{e.stopPropagation();if(sidebarState==='hidden'){sidebarState='mini';updateSidebar();}});
-sidebar.addEventListener('click',e=>{e.stopPropagation();if(sidebarState==='mini'){sidebarState='full';updateSidebar();}});
-if(innerWidth>768){
-  sidebar.addEventListener('mouseenter',()=>{if(sidebarState==='mini'){sidebarState='full';updateSidebar();}});
-  sidebar.addEventListener('mouseleave',()=>{if(sidebarState==='full'){sidebarState='mini';updateSidebar();}});
-}
+var sb=document.getElementById('sidebar'),hb=document.getElementById('hamburger'),ss='hidden';
+function usb(){sb.classList.remove('hidden','mini','full');if(ss!=='hidden')sb.classList.add(ss);hb.classList.toggle('hidden',ss!=='hidden');}
+hb.addEventListener('click',function(e){e.stopPropagation();if(ss==='hidden'){ss='mini';usb();}});
+sb.addEventListener('click',function(e){e.stopPropagation();if(ss==='mini'){ss='full';usb();}});
+if(innerWidth>768){sb.addEventListener('mouseenter',function(){if(ss==='mini'){ss='full';usb();}});sb.addEventListener('mouseleave',function(){if(ss==='full'){ss='mini';usb();}});}
 
 /* ===== PANELS ===== */
-const panels={
-  home:document.getElementById('homePanel'),
-  status:document.getElementById('statusPanel'),
-  settings:document.getElementById('settingsPanel')
-};
-const sidebarLinks=document.querySelectorAll('.sidebar-link');
-function openPanel(n){  Object.values(panels).forEach(p=>{if(p)p.classList.remove('active');});
-  if(panels[n])panels[n].classList.add('active');
-  sidebarLinks.forEach(l=>{l.classList.remove('active');if(l.dataset.panel===n)l.classList.add('active');});
-  setTimeout(()=>{sidebarState='hidden';updateSidebar();},300);
-}
-function openExternal(u){window.open(u,'_blank');sidebarState='hidden';updateSidebar();}
-sidebarLinks.forEach(l=>{
-  l.addEventListener('click',()=>{
-    const p=l.dataset.panel;
-    switch(p){
-      case'home':openPanel('home');break;
-      case'status':openPanel('status');fetchServer();break;
-      case'settings':openPanel('settings');break;
-      case'shop':openExternal('https://azthera-smp.tebex.io/');break;
-      case'support':openExternal('https://minecraft-mp.com/server-s351086');break;
-    }
-  });
-});
+var pn={home:document.getElementById('homePanel'),status:document.getElementById('statusPanel'),settings:document.getElementById('settingsPanel')};
+var sl=document.querySelectorAll('.sidebar-link');
+function opn(n){Object.values(pn).forEach(function(p){if(p)p.classList.remove('active');});if(pn[n])pn[n].classList.add('active');sl.forEach(function(l){l.classList.remove('active');if(l.dataset.panel===n)l.classList.add('active');});setTimeout(function(){ss='hidden';usb();},300);}
+function opnE(u){window.open(u,'_blank');ss='hidden';usb();}
+sl.forEach(function(l){l.addEventListener('click',function(){var p=l.dataset.panel;switch(p){case'home':opn('home');break;case'status':opn('status');fs();break;case'settings':opn('settings');break;case'shop':opnE('https://azthera-smp.tebex.io/');break;case'support':opnE('https://minecraft-mp.com/server-s351086');break;}});});
 
-/* ===== SERVER ===== */
-async function fetchServer(){
-  const s=document.getElementById('serverState'),p=document.getElementById('serverPlayers');
-  try{
-    const r=await fetch('https://api.mcstatus.io/v2/status/java/aztherasmp.srv-mc.xyz',{cache:'no-store'});
-    const d=await r.json();
-    s.textContent=d.online?'🟢 Online':'🔴 Offline';
-    p.textContent=(d.players?.online||0)+'/'+(d.players?.max||0);
-  }catch{s.textContent='⚪ Error';p.textContent='-';}
-}
+async function fs(){var s=document.getElementById('serverState'),p=document.getElementById('serverPlayers');try{var r=await fetch('https://api.mcstatus.io/v2/status/java/aztherasmp.srv-mc.xyz',{cache:'no-store'}),d=await r.json();s.textContent=d.online?'🟢 Online':'🔴 Offline';p.textContent=(d.players?.online||0)+'/'+(d.players?.max||0);}catch{s.textContent='⚪ Error';p.textContent='-';}}
 
 /* ===== THEME ===== */
-const toggle=document.getElementById('themeToggle'),html=document.documentElement;
-let theme=localStorage.getItem('az_theme')||'dark';
-function applyTheme(t){
-  html.setAttribute('data-theme',t);
-  toggle.classList.toggle('active',t==='light');
-  localStorage.setItem('az_theme',t);
-}
-toggle.addEventListener('click',()=>{theme=theme==='dark'?'light':'dark';applyTheme(theme);});
-applyTheme(theme);
+var tg=document.getElementById('themeToggle'),ht=document.documentElement,tm=localStorage.getItem('az_theme')||'dark';
+function apT(t){ht.setAttribute('data-theme',t);tg.classList.toggle('active',t==='light');localStorage.setItem('az_theme',t);}
+tg.addEventListener('click',function(){tm=tm==='dark'?'light':'dark';apT(tm);});apT(tm);
 
 /* ===== LANGUAGE ===== */
-const langData={
-  id:{welcomeTitle:"Selamat Datang di Azthera SMP",welcomeDesc:"Klik tombol di bawah untuk masuk ke halaman utama dan mulai petualanganmu.",welcomeBtnText:"Lanjut",homeTitle:"Azthera SMP",statusTitle:"Status Server",settingsTitle:"Pengaturan",themeLabel:"Tema:",langLabel:"Bahasa:",resetLabel:"Reset Pengaturan",statusAddr:"Alamat",statusLabel:"Status",playersLabel:"Players"},
-  en:{welcomeTitle:"Welcome to Azthera SMP",welcomeDesc:"Click the button below to enter the main page and start your adventure.",welcomeBtnText:"Continue",homeTitle:"Azthera SMP",statusTitle:"Server Status",settingsTitle:"Settings",themeLabel:"Theme:",langLabel:"Language:",resetLabel:"Reset Settings",statusAddr:"Address",statusLabel:"Status",playersLabel:"Players"}
-};
-let currentLang=localStorage.getItem('az_lang')||'id';
-function applyLanguage(lang){
-  currentLang=lang;localStorage.setItem('az_lang',lang);
-  const d=langData[lang];document.documentElement.lang=lang;  Object.keys(d).forEach(k=>{const el=document.getElementById(k);if(el&&d[k])el.textContent=d[k];});
-}
-document.getElementById('languageSelect').value=currentLang;
-document.getElementById('languageSelect').addEventListener('change',e=>{
-  applyLanguage(e.target.value);
-  alert(currentLang==='en'?'Language changed to English.':'Bahasa diubah ke Indonesia.');
-});
-applyLanguage(currentLang);
+var LD={id:{welcomeTitle:"Selamat Datang di Azthera SMP",welcomeDesc:"Klik tombol di bawah untuk masuk ke halaman utama dan mulai petualanganmu.",welcomeBtnText:"Lanjut",homeTitle:"Azthera SMP",statusTitle:"Status Server",settingsTitle:"Pengaturan",themeLabel:"Tema:",langLabel:"Bahasa:",resetLabel:"Reset Pengaturan",statusAddr:"Alamat",statusLabel:"Status",playersLabel:"Players"},en:{welcomeTitle:"Welcome to Azthera SMP",welcomeDesc:"Click the button below to enter the main page and start your adventure.",welcomeBtnText:"Continue",homeTitle:"Azthera SMP",statusTitle:"Server Status",settingsTitle:"Settings",themeLabel:"Theme:",langLabel:"Language:",resetLabel:"Reset Settings",statusAddr:"Address",statusLabel:"Status",playersLabel:"Players"}};
+var cL=localStorage.getItem('az_lang')||'id';
+function apL(l){cL=l;localStorage.setItem('az_lang',l);var d=LD[l];ht.lang=l;Object.keys(d).forEach(function(k){var e=document.getElementById(k);if(e&&d[k])e.textContent=d[k];});}
+document.getElementById('languageSelect').value=cL;
+document.getElementById('languageSelect').addEventListener('change',function(e){apL(e.target.value);alert(cL==='en'?'Language changed to English.':'Bahasa diubah ke Indonesia.');});apL(cL);
 
 /* ===== RESET ===== */
-document.getElementById('resetSettings').addEventListener('click',()=>{
-  if(confirm('Yakin ingin menghapus semua pengaturan?')){localStorage.clear();location.reload();}
-});
-
-/* ===== CLOSE SIDEBAR ON OUTSIDE CLICK ===== */
-document.addEventListener('click',e=>{
-  if(sidebarState!=='hidden'&&!sidebar.contains(e.target)){sidebarState='hidden';updateSidebar();}
-});
+document.getElementById('resetSettings').addEventListener('click',function(){if(confirm('Yakin ingin menghapus semua pengaturan?')){localStorage.clear();location.reload();}});
+document.addEventListener('click',function(e){if(ss!=='hidden'&&!sb.contains(e.target)){ss='hidden';usb();}});
 </script>
 </body>
 </html>

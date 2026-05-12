@@ -18,6 +18,10 @@
   --sidebar-width-hidden:0px; --sidebar-width-mini:60px; --sidebar-width-full:220px;
   --radius-sm:10px; --radius-md:14px; --radius-lg:20px;
   --icon-size:20px; --icon-stroke:1.8px;
+  
+  /* 🔗 GANTI LINK PNG BACKGROUND DI SINI */
+  --bg-img-dark: url("https://i.ibb.co.com/0Vdk3m46/Screenshot-2025-10-25-10-02-05-63-84181a524dcfbce864002b17997a7b1d.png");
+  --bg-img-light: url("https://i.ibb.co.com/v4bJgCTX/Screenshot-2025-10-25-10-01-17-37-84181a524dcfbce864002b17997a7b1d.png");
 }
 [data-theme="light"]{
   --bg-dark:#eef3f8; --panel-dark:#ffffff; --muted-dark:#4d5862; --text-primary:#1a1a2e;
@@ -32,23 +36,18 @@
 html,body{height:100%;overflow:hidden;color:var(--muted-dark);transition:color .25s ease;background:var(--bg-dark);}
 body::before{
   content:"";position:fixed;inset:0;
-  background:radial-gradient(ellipse at 20% 20%, rgba(47,135,230,0.12), transparent 50%),
-             radial-gradient(ellipse at 80% 80%, rgba(124,58,237,0.08), transparent 50%),
-             url("https://i.ibb.co.com/0Vdk3m46/Screenshot-2025-10-25-10-02-05-63-84181a524dcfbce864002b17997a7b1d.jpg") center/cover no-repeat fixed;
+  background:var(--bg-img-dark);
+  background-size:cover; background-position:center; background-attachment:fixed; background-repeat:no-repeat;
   z-index:-1;pointer-events:none;transition:opacity .3s ease;
 }
-[data-theme="light"] body::before{
-  background:radial-gradient(ellipse at 20% 20%, rgba(42,110,220,0.06), transparent 50%),
-             radial-gradient(ellipse at 80% 80%, rgba(109,40,217,0.04), transparent 50%),
-             url("https://i.ibb.co.com/v4bJgCTX/Screenshot-2025-10-25-10-01-17-37-84181a524dcfbce864002b17997a7b1d.jpg") center/cover no-repeat fixed;
-}
+[data-theme="light"] body::before{background-image:var(--bg-img-light);}
 
-/* ============ GLASS UTILITIES (VALID CSS) ============ */
+/* ============ GLASS UTILITIES ============ */
 .glass{
   background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:var(--radius-md);
   backdrop-filter:var(--backdrop-blur); -webkit-backdrop-filter:var(--backdrop-blur);
-  box-shadow:var(--glass-shadow); transition:all 0.25s ease;}
-.glass:hover{
+  box-shadow:var(--glass-shadow); transition:all 0.25s ease;
+}.glass:hover{
   background:var(--glass-bg-hover); border-color:var(--glass-border-hover);
   box-shadow:var(--glass-shadow-hover); transform:translateX(4px);
 }
@@ -70,8 +69,12 @@ body::before{
 .icon-lg{--icon-size:24px;} .icon-sm{--icon-size:16px;}
 .link-icon:hover .icon svg, .link-icon.active .icon svg{stroke:var(--accent-blue);transform:scale(1.05);}
 
-/* ============ LOADING SCREEN (GALAXY - TILTED & ZOOMED) ============ */
-#loadingScreen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;background:#02030a;z-index:999;transition:opacity .8s ease;}
+/* ============ LOADING SCREEN (AUTO RESET) ============ */
+#loadingScreen{
+  position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;
+  background:#02030a; z-index:999; opacity:1; /* Selalu terlihat saat load */
+  transition:opacity .8s ease;
+}
 #galaxyCanvas{position:absolute;inset:0;width:100%;height:100%;display:block;}
 .loader-content{position:relative;z-index:10;text-align:center;padding:20px;}
 .loader-text{color:#fff;font-weight:700;font-size:22px;letter-spacing:2px;text-shadow:0 0 20px rgba(47,135,230,0.8), 0 0 40px rgba(124,58,237,0.5);animation:fadeText 1.5s ease-in-out infinite, glowPulse 2s ease-in-out infinite;}
@@ -79,7 +82,7 @@ body::before{
 @keyframes fadeText{0%,100%{opacity:.5;}50%{opacity:1;}}
 @keyframes glowPulse{0%,100%{text-shadow:0 0 20px rgba(47,135,230,0.8), 0 0 40px rgba(124,58,237,0.5);}50%{text-shadow:0 0 30px rgba(47,135,230,1), 0 0 60px rgba(124,58,237,0.8), 0 0 80px rgba(6,182,212,0.6);}}
 
-/* ============ WELCOME PANEL ============ */
+/* ============ WELCOME ============ */
 #welcome{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(0,0,0,0.45),rgba(0,0,0,0.6));z-index:200;text-align:center;display:none;backdrop-filter:blur(8px);}
 #welcome .box{
   background:var(--panel-dark); border:1px solid var(--glass-border); border-radius:var(--radius-lg);
@@ -93,13 +96,13 @@ body::before{
 @keyframes fadeSlideDown{from{opacity:0;transform:translateY(-25px);}to{opacity:1;transform:translateY(0);}}
 .closeWelcome{
   margin-top:20px;padding:12px 24px;background:linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
-  color:#fff;border:none;border-radius:var(--radius-md);cursor:pointer;font-weight:700;font-size:14px;
-  transition:all .25s ease;box-shadow:0 0 20px rgba(47,135,230,0.4);position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:8px;
+  color:#fff;border:none;border-radius:var(--radius-md);cursor:pointer;font-weight:700;font-size:14px;  transition:all .25s ease;box-shadow:0 0 20px rgba(47,135,230,0.4);position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:8px;
 }
-.closeWelcome::before{content:"";position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);transition:left .4s ease;}.closeWelcome:hover::before{left:100%;}
+.closeWelcome::before{content:"";position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);transition:left .4s ease;}
+.closeWelcome:hover::before{left:100%;}
 .closeWelcome:hover{transform:scale(1.05) translateY(-2px);box-shadow:0 0 35px rgba(47,135,230,0.7), 0 0 60px rgba(124,58,237,0.4);}
 
-/* ============ HAMBURGER BUTTON (FIXED) ============ */
+/* ============ HAMBURGER ============ */
 #hamburger{
   position:fixed;top:14px;left:14px;z-index:150;
   background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:var(--radius-sm);
@@ -142,9 +145,9 @@ body::before{
 .sidebar-footer{padding:16px 8px;border-top:1px solid var(--glass-border);}
 
 /* ============ MAIN & PANELS ============ */
-.main-content{margin-left:0;transition:margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);height:100%;width:100%;}
-.sidebar-wrapper.mini ~ .main-content{margin-left:var(--sidebar-width-mini);width:calc(100% - var(--sidebar-width-mini));}
+.main-content{margin-left:0;transition:margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);height:100%;width:100%;}.sidebar-wrapper.mini ~ .main-content{margin-left:var(--sidebar-width-mini);width:calc(100% - var(--sidebar-width-mini));}
 .sidebar-wrapper.full ~ .main-content{margin-left:var(--sidebar-width-full);width:calc(100% - var(--sidebar-width-full));}
+
 .panel{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px;z-index:130;background:transparent;}
 .panel.active{display:flex;}
 .panel .box{
@@ -159,7 +162,7 @@ body::before{
 .panel.active .box > *:nth-child(5){animation-delay:1s;} .panel.active .box > *:nth-child(6){animation-delay:1.2s;}
 .panel h2{color:var(--accent-blue);margin-bottom:16px;font-size:2rem;text-shadow:0 0 20px rgba(47,135,230,0.3);display:flex;align-items:center;gap:10px;}
 
-/* HOME LINKS (FIXED OVERLAP & SPACING) */
+/* HOME LINKS */
 .home-link{
   background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:var(--radius-md);
   backdrop-filter:var(--backdrop-blur); -webkit-backdrop-filter:var(--backdrop-blur); box-shadow:var(--glass-shadow);
@@ -171,7 +174,7 @@ body::before{
 .home-link:hover{background:var(--glass-bg-hover);border-color:var(--glass-border-hover);transform:translateX(4px);box-shadow:var(--glass-shadow-hover);}
 .home-link:hover::before{opacity:1;} .home-link:active{transform:translateX(2px) scale(0.99);}
 
-/* STATUS & SETTINGS ITEMS */
+/* STATUS & SETTINGS */
 .status-item, .settings-item{
   background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:var(--radius-md);
   backdrop-filter:var(--backdrop-blur); -webkit-backdrop-filter:var(--backdrop-blur); box-shadow:var(--glass-shadow);
@@ -191,10 +194,10 @@ body::before{
 .toggle-switch:hover{border-color:var(--glass-border-hover);box-shadow:var(--glass-shadow-hover);}
 .toggle-switch .lever{position:absolute;top:3px;left:3px;width:20px;height:20px;background:var(--accent-blue);border-radius:50%;transition:left .25s ease;box-shadow:0 2px 8px rgba(0,0,0,0.3);}
 .toggle-switch.active .lever{left:29px;background:var(--accent-cyan);}
-
 #languageSelect{
   background:var(--glass-bg); border:1px solid var(--glass-border); color:var(--muted-dark); padding:8px 32px 8px 12px;
-  border-radius:var(--radius-sm); font-weight:700; appearance:none; min-width:140px; cursor:pointer;  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239aa6b2' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  border-radius:var(--radius-sm); font-weight:700; appearance:none; min-width:140px; cursor:pointer;
+  background-image:url("image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239aa6b2' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
   background-repeat:no-repeat; background-position:right 10px center; transition:all .2s ease; box-shadow:var(--glass-shadow);
 }
 #languageSelect:hover{border-color:var(--glass-border-hover);box-shadow:var(--glass-shadow-hover);}
@@ -218,7 +221,6 @@ body::before{
 </head>
 <body>
 
-<!-- Loading Screen -->
 <div id="loadingScreen">
   <canvas id="galaxyCanvas"></canvas>
   <div class="loader-content">
@@ -227,72 +229,45 @@ body::before{
   </div>
 </div>
 
-<!-- Welcome -->
 <div id="welcome">
   <div class="box">
     <h2 id="welcomeTitle"><span class="icon icon-lg"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></span> Azthera SMP</h2>
     <p id="welcomeDesc">Klik tombol di bawah untuk masuk ke halaman utama dan mulai petualanganmu.</p>
-    <button class="closeWelcome" id="welcomeBtn">
-      <span class="icon"><svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg></span>
-      <span id="welcomeBtnText">Lanjut</span>
-    </button>
+    <button class="closeWelcome" id="welcomeBtn"><span class="icon"><svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg></span><span id="welcomeBtnText">Lanjut</span></button>
   </div>
 </div>
 
-<!-- Hamburger -->
-<button id="hamburger">
-  <span class="icon"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></span>
-</button>
-<!-- Sidebar -->
+<button id="hamburger"><span class="icon"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></span></button>
+
 <aside class="sidebar-wrapper" id="sidebar">
   <div class="sidebar-header"><div class="sidebar-logo"><span class="icon icon-sm"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/></svg></span> Azthera SMP</div></div>
   <ul class="sidebar-list">
     <li class="sidebar-item"><button class="sidebar-link active link-icon" data-panel="home"><span class="sidebar-icon icon"><svg viewBox="0 0 24 24"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg></span><span class="sidebar-text">Home</span></button></li>
-    <li class="sidebar-item"><button class="sidebar-link link-icon" data-panel="shop"><span class="sidebar-icon icon"><svg viewBox="0 0 24 24"><circle cx="9" cy="20" r="1.5"/><circle cx="17" cy="20" r="1.5"/><path d="M4 4h2l2.5 10h9l2-8H7"/><path d="M4 4v2"/></svg></span><span class="sidebar-text">Shop</span></button></li>
-    <li class="sidebar-item"><button class="sidebar-link link-icon" data-panel="support"><span class="sidebar-icon icon"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 22l7.8-8.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg></span><span class="sidebar-text">Support</span></button></li>
+    <li class="sidebar-item"><button class="sidebar-link link-icon" data-panel="shop"><span class="sidebar-icon icon"><svg viewBox="0 0 24 24"><circle cx="9" cy="20" r="1.5"/><circle cx="17" cy="20" r="1.5"/><path d="M4 4h2l2.5 10h9l2-8H7"/><path d="M4 4v2"/></svg></span><span class="sidebar-text">Shop</span></button></li>    <li class="sidebar-item"><button class="sidebar-link link-icon" data-panel="support"><span class="sidebar-icon icon"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 22l7.8-8.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg></span><span class="sidebar-text">Support</span></button></li>
     <li class="sidebar-item"><button class="sidebar-link link-icon" data-panel="status"><span class="sidebar-icon icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg></span><span class="sidebar-text">Server Status</span></button></li>
     <li class="sidebar-item"><button class="sidebar-link link-icon" data-panel="settings"><span class="sidebar-icon icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="2.5"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg></span><span class="sidebar-text">Settings</span></button></li>
   </ul>
   <div class="sidebar-footer"></div>
 </aside>
 
-<!-- Main Content -->
 <div class="main-content">
   <section class="panel active" id="homePanel">
     <div class="box">
       <h2 id="homeTitle"><span class="icon icon-lg"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/></svg></span> Azthera SMP</h2>
       
-      <a href="https://youtube.com/@azthera.smp.server" target="_blank" class="home-link link-icon" id="linkYT">
-        <span class="icon"><svg viewBox="0 0 24 24"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/></svg></span>
-        <span>YouTube</span>
-      </a>
-      
-      <a href="https://www.tiktok.com/@azthera.smp" target="_blank" class="home-link link-icon" id="linkTT">
-        <span class="icon"><svg viewBox="0 0 24 24"><path d="M9 3v12a3 3 0 1 0 3-3V3"/><path d="M15 3a6 6 0 0 0 6 6"/></svg></span>
-        <span>TikTok</span>
-      </a>
-      
-      <a href="https://www.instagram.com/Afn.mc" target="_blank" class="home-link link-icon" id="linkIG">
-        <span class="icon"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.5"/></svg></span>
-        <span>Instagram</span>
-      </a>
-      
-      <a href="https://discord.gg/jfvsWcGpq7" target="_blank" class="home-link link-icon" id="linkDC">
-        <span class="icon"><svg viewBox="0 0 24 24"><path d="M9 19c-4 0-7-2-7-7s3-7 7-7 7 2 7 7-3 7-7 7z"/><path d="M9 10h.01M15 10h.01"/></svg></span>
-        <span>Discord</span>
-      </a>
-      
-      <a href="https://chat.whatsapp.com/C5ys8VP3mahJeL9yZr6Tbo" target="_blank" class="home-link link-icon" id="linkWA">
-        <span class="icon"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/><path d="M9.5 9a2.5 2.5 0 1 0 5 0 2.5 2.5 0 1 0-5 0z"/></svg></span>
-        <span>WhatsApp</span>
-      </a>
+      <a href="https://youtube.com/@azthera.smp.server" target="_blank" class="home-link link-icon" id="linkYT"><span class="icon"><svg viewBox="0 0 24 24"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/></svg></span><span>YouTube</span></a>
+      <a href="https://www.tiktok.com/@azthera.smp" target="_blank" class="home-link link-icon" id="linkTT"><span class="icon"><svg viewBox="0 0 24 24"><path d="M9 3v12a3 3 0 1 0 3-3V3"/><path d="M15 3a6 6 0 0 0 6 6"/></svg></span><span>TikTok</span></a>
+      <a href="https://www.instagram.com/Afn.mc" target="_blank" class="home-link link-icon" id="linkIG"><span class="icon"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.5"/></svg></span><span>Instagram</span></a>
+      <a href="https://discord.gg/jfvsWcGpq7" target="_blank" class="home-link link-icon" id="linkDC"><span class="icon"><svg viewBox="0 0 24 24"><path d="M9 19c-4 0-7-2-7-7s3-7 7-7 7 2 7 7-3 7-7 7z"/><path d="M9 10h.01M15 10h.01"/></svg></span><span>Discord</span></a>
+      <a href="https://chat.whatsapp.com/C5ys8VP3mahJeL9yZr6Tbo" target="_blank" class="home-link link-icon" id="linkWA"><span class="icon"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/><path d="M9.5 9a2.5 2.5 0 1 0 5 0 2.5 2.5 0 1 0-5 0z"/></svg></span><span>WhatsApp</span></a>
     </div>
   </section>
 
   <section class="panel" id="statusPanel">
     <div class="box">
       <h2 id="statusTitle"><span class="icon icon-lg"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a15 15 0 0 1 0 18"/></svg></span> Status Server</h2>
-      <div class="status-item"><span id="statusAddr"><span class="icon icon-sm"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span> Alamat</span><span>aztherasmp.srv-mc.xyz <small style="opacity:.7">bedrock: 19130</small></span></div>      <div class="status-item"><span id="statusLabel"><span class="icon icon-sm"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></span> Status</span><span id="serverState">Checking...</span></div>
+      <div class="status-item"><span id="statusAddr"><span class="icon icon-sm"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span> Alamat</span><span>aztherasmp.srv-mc.xyz <small style="opacity:.7">bedrock: 19130</small></span></div>
+      <div class="status-item"><span id="statusLabel"><span class="icon icon-sm"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></span> Status</span><span id="serverState">Checking...</span></div>
       <div class="status-item"><span id="playersLabel"><span class="icon icon-sm"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span> Players</span><span id="serverPlayers">-</span></div>
     </div>
   </section>
@@ -308,19 +283,20 @@ body::before{
 </div>
 
 <script>
-// === GALAXY ANIMATION (TILTED & ZOOMED) ===
 let galaxyScene, galaxyCamera, galaxyRenderer, galaxyPoints, galaxyClock;
+
+// === INISIALISASI GALAXY & LOADING ===
 function initGalaxy(){
   const canvas=document.getElementById('galaxyCanvas');
+  if(galaxyRenderer){ galaxyRenderer.dispose(); canvas.parentElement.removeChild(canvas); }
+  const newCanvas=document.createElement('canvas'); newCanvas.id='galaxyCanvas'; canvas.parentNode.insertBefore(newCanvas, canvas.nextSibling);
+  
   galaxyScene=new THREE.Scene();
-  galaxyCamera=new THREE.PerspectiveCamera(75,innerWidth/innerHeight,0.1,1000);
-  galaxyCamera.position.set(0,2,7); // ZOOM: closer camera
-  galaxyRenderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
-  galaxyRenderer.setSize(innerWidth,innerHeight);
-  galaxyRenderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  galaxyCamera=new THREE.PerspectiveCamera(75,innerWidth/innerHeight,0.1,1000);  galaxyCamera.position.set(0,2,7); // ZOOM
+  galaxyRenderer=new THREE.WebGLRenderer({canvas:newCanvas,antialias:true,alpha:true});
+  galaxyRenderer.setSize(innerWidth,innerHeight); galaxyRenderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
 
   const p={count:12000,size:0.025,radius:5,branches:5,spin:1.2,randomness:0.4,randomnessPower:3,insideColor:'#2f87e6',outsideColor:'#7c3aed'};
-  
   function generateGalaxy(){
     const g=new THREE.BufferGeometry(), pos=new Float32Array(p.count*3), col=new Float32Array(p.count*3);
     const c1=new THREE.Color(p.insideColor), c2=new THREE.Color(p.outsideColor);
@@ -335,30 +311,36 @@ function initGalaxy(){
     g.setAttribute('position',new THREE.BufferAttribute(pos,3)); g.setAttribute('color',new THREE.BufferAttribute(col,3));
     const mat=new THREE.PointsMaterial({size:p.size,sizeAttenuation:true,depthWrite:false,blending:THREE.AdditiveBlending,vertexColors:true,transparent:true,opacity:0.9});
     galaxyPoints=new THREE.Points(g,mat);
-    galaxyPoints.rotation.x = -0.4; // TILT: miring ke bawah
-    galaxyPoints.rotation.z = 0.2;  // TILT: miring ke samping
+    galaxyPoints.rotation.x=-0.4; galaxyPoints.rotation.z=0.2; // TILT
     galaxyScene.add(galaxyPoints);
   }
   generateGalaxy(); galaxyClock=new THREE.Clock();
   function animate(){
-    const e=galaxyClock.getElapsedTime();    if(galaxyPoints) galaxyPoints.rotation.y = e*0.08;
-    galaxyRenderer.render(galaxyScene,galaxyCamera);
-    requestAnimationFrame(animate);
+    const e=galaxyClock.getElapsedTime();
+    if(galaxyPoints) galaxyPoints.rotation.y=e*0.08;
+    galaxyRenderer.render(galaxyScene,galaxyCamera); requestAnimationFrame(animate);
   }
   animate();
-  window.addEventListener('resize',()=>{
-    galaxyCamera.aspect=innerWidth/innerHeight; galaxyCamera.updateProjectionMatrix(); galaxyRenderer.setSize(innerWidth,innerHeight);
-  });
+  window.addEventListener('resize',()=>{galaxyCamera.aspect=innerWidth/innerHeight;galaxyCamera.updateProjectionMatrix();galaxyRenderer.setSize(innerWidth,innerHeight);});
 }
 
-// === LOADING & WELCOME ===
+// === LOADING RESET & PRELOAD ===
 const loading=document.getElementById("loadingScreen"), welcome=document.getElementById('welcome');
-const images=["https://i.ibb.co.com/Z64HHhkR/IMG-20251014-082055.jpg","https://i.ibb.co.com/bj7b4wPq/IMG-20251014-082040.jpg"]; let loadedCount=0;
-function checkLoaded(){loadedCount++;if(loadedCount===images.length){setTimeout(()=>{loading.style.opacity='0';setTimeout(()=>{loading.style.display='none';if(galaxyRenderer)galaxyRenderer.dispose();welcome.style.display='flex';void welcome.offsetWidth;welcome.classList.add('show');},800);},1500);}}
-images.forEach(src=>{const img=new Image();img.src=src;img.onload=checkLoaded;img.onerror=checkLoaded;});
-document.addEventListener('DOMContentLoaded',()=>initGalaxy());
-document.querySelector('.closeWelcome').addEventListener('click',()=>welcome.style.display='none');
+// Tambahkan timestamp agar tidak ter-cache & selalu trigger loading ulang
+const preloadUrls=["https://i.ibb.co.com/Z64HHhkR/IMG-20251014-082055.jpg","https://i.ibb.co.com/bj7b4wPq/IMG-20251014-082040.jpg"];
+let loadedCount=0;
 
+function checkLoaded(){loadedCount++;if(loadedCount===preloadUrls.length){
+  setTimeout(()=>{loading.style.opacity='0';setTimeout(()=>{loading.style.display='none';welcome.style.display='flex';void welcome.offsetWidth;welcome.classList.add('show');},800);},1200);
+}}
+preloadUrls.forEach(src=>{const img=new Image();img.src=src+'?v='+Date.now();img.onload=checkLoaded;img.onerror=checkLoaded;});
+
+// PASTI RESET SETIAP RELOAD
+document.addEventListener('DOMContentLoaded',()=>{
+  loading.style.display='flex'; loading.style.opacity='1';
+  initGalaxy();
+});
+document.querySelector('.closeWelcome').addEventListener('click',()=>welcome.style.display='none');
 // === SIDEBAR ===
 const sidebar=document.getElementById('sidebar'), hamburger=document.getElementById('hamburger'); let sidebarState='hidden';
 function updateSidebar(){sidebar.classList.remove('hidden','mini','full');if(sidebarState!=='hidden')sidebar.classList.add(sidebarState);hamburger.classList.toggle('hidden',sidebarState!=='hidden');}
@@ -373,15 +355,14 @@ function openPanel(name){Object.values(panels).forEach(p=>p?.classList.remove('a
 function openExternal(url){window.open(url,'_blank');sidebarState='hidden';updateSidebar();}
 sidebarLinks.forEach(l=>{l.addEventListener('click',()=>{const p=l.dataset.panel;switch(p){case'home':openPanel('home');break;case'status':openPanel('status');fetchServer();break;case'settings':openPanel('settings');break;case'shop':openExternal('https://azthera-smp.tebex.io/');break;case'support':openExternal('https://minecraft-mp.com/server-s351086');break;}});});
 
-// === SERVER STATUS ===
+// === SERVER ===
 async function fetchServer(){const s=document.getElementById('serverState'),p=document.getElementById('serverPlayers');try{const r=await fetch('https://api.mcstatus.io/v2/status/java/aztherasmp.srv-mc.xyz',{cache:'no-store'}),d=await r.json();s.textContent=d.online?'🟢 Online':'🔴 Offline';p.textContent=`${d.players?.online||0}/${d.players?.max||0}`;}catch{s.textContent='⚪ Error';p.textContent='-';}}
 
-// === THEME ===
+// === THEME & LANGUAGE ===
 const toggle=document.getElementById('themeToggle'),html=document.documentElement; let theme=localStorage.getItem('az_theme')||'dark';
 function applyTheme(t){html.setAttribute('data-theme',t);toggle.classList.toggle('active',t==='light');localStorage.setItem('az_theme',t);}
 toggle.addEventListener('click',()=>{theme=theme==='dark'?'light':'dark';applyTheme(theme);});applyTheme(theme);
 
-// === LANGUAGE ===
 const langData={id:{welcomeTitle:"Selamat Datang di Azthera SMP",welcomeDesc:"Klik tombol di bawah untuk masuk ke halaman utama dan mulai petualanganmu.",welcomeBtnText:"Lanjut",homeTitle:"Azthera SMP",statusTitle:"Status Server",settingsTitle:"Pengaturan",themeLabel:"Tema:",langLabel:"Bahasa:",resetLabel:"Reset Pengaturan",statusAddr:"Alamat",statusLabel:"Status",playersLabel:"Players"},en:{welcomeTitle:"Welcome to Azthera SMP",welcomeDesc:"Click the button below to enter the main page and start your adventure.",welcomeBtnText:"Continue",homeTitle:"Azthera SMP",statusTitle:"Server Status",settingsTitle:"Settings",themeLabel:"Theme:",langLabel:"Language:",resetLabel:"Reset Settings",statusAddr:"Address",statusLabel:"Status",playersLabel:"Players"}};
 let currentLang=localStorage.getItem('az_lang')||'id';
 function applyLanguage(lang){currentLang=lang;localStorage.setItem('az_lang',lang);const d=langData[lang];document.documentElement.lang=lang;Object.keys(d).forEach(k=>{const el=document.getElementById(k);if(el&&d[k])el.textContent=d[k];});}
@@ -389,8 +370,8 @@ document.getElementById('languageSelect').value=currentLang;
 document.getElementById('languageSelect').addEventListener('change',(e)=>{applyLanguage(e.target.value);alert(currentLang==='en'?'Language changed to English.':'Bahasa diubah ke Indonesia.');});
 applyLanguage(currentLang);
 
-// === RESET & CLOSE OUTSIDE ===
-document.getElementById('resetSettings').addEventListener('click',()=>{if(confirm('Yakin ingin menghapus semua pengaturan?')){localStorage.clear();location.reload();}});document.addEventListener('click',(e)=>{if(sidebarState!=='hidden'&&!sidebar.contains(e.target)){sidebarState='hidden';updateSidebar();}});
+document.getElementById('resetSettings').addEventListener('click',()=>{if(confirm('Yakin ingin menghapus semua pengaturan?')){localStorage.clear();location.reload();}});
+document.addEventListener('click',(e)=>{if(sidebarState!=='hidden'&&!sidebar.contains(e.target)){sidebarState='hidden';updateSidebar();}});
 </script>
 </body>
-                                                                                                                                                                                                                                                                                                      </html>
+                                 </html>

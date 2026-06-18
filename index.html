@@ -367,7 +367,7 @@ const panels={home:document.getElementById('homePanel'),status:document.getEleme
 const sidebarLinks=document.querySelectorAll('.sidebar-link');
 function openPanel(name){Object.values(panels).forEach(p=>p?.classList.remove('active'));if(panels[name])panels[name].classList.add('active');sidebarLinks.forEach(l=>{l.classList.remove('active');if(l.dataset.panel===name)l.classList.add('active');});setTimeout(()=>{sidebarState='hidden';updateSidebar();},300);}
 function openExternal(url){window.open(url,'_blank');sidebarState='hidden';updateSidebar();}
-sidebarLinks.forEach(l=>{l.addEventListener('click',()=>{const p=l.dataset.panel;switch(p){case'home':openPanel('home');break;case'status':openPanel('status');fetchServer();break;case'settings':openPanel('settings');break;case'shop':openExternal('https://azthera-smp.tebex.io/');break;case'support':openExternal('https://minecraft-mp.com/server-s351086');break;}});});
+sidebarLinks.forEach(l=>{l.addEventListener('click',()=>{const p=l.dataset.panel;switch(p){case'home':openPanel('home');break;case'status':openPanel('status');fetchServer();break;case'settings':openPanel('settings');break;case'shop':openExternal('https://afnmc.github.io/aztherasmp.shop/');break;case'support':openExternal('https://minecraft-mp.com/server-s351086');break;}});});
 
 // === SERVER ===
 async function fetchServer(){const s=document.getElementById('serverState'),p=document.getElementById('serverPlayers');try{const r=await fetch('https://api.mcstatus.io/v2/status/java/aztherasmp.srv-mc.xyz',{cache:'no-store'}),d=await r.json();s.textContent=d.online?'🟢 Online':'🔴 Offline';p.textContent=`${d.players?.online||0}/${d.players?.max||0}`;}catch{s.textContent='⚪ Error';p.textContent='-';}}
